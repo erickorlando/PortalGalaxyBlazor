@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>d68514a3-91e9-45e4-8758-d94f17343ea0</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.14">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.14" />
+    <PackageReference Include="Scrutor" Version="4.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\PortalGalaxy.DataAccess\PortalGalaxy.DataAccess.csproj" />
+    <ProjectReference Include="..\..\PortalGalaxy.Entities\PortalGalaxy.Entities.csproj" />
+    <ProjectReference Include="..\..\PortalGalaxy.Services\PortalGalaxy.Services.csproj" />
+    <ProjectReference Include="..\Client\PortalGalaxy.Client.csproj" />
+    <ProjectReference Include="..\Shared\PortalGalaxy.Shared.csproj" />
+  </ItemGroup>
+
+
+</Project>

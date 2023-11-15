@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PortalGalaxy.DataAccess\PortalGalaxy.DataAccess.csproj" />
+    <ProjectReference Include="..\PortalGalaxy.Entities\PortalGalaxy.Entities.csproj" />
+    <ProjectReference Include="..\PortalGalaxy.Repositories\PortalGalaxy.Repositories.csproj" />
+    <ProjectReference Include="..\PortalGalaxy\Shared\PortalGalaxy.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Implementaciones\" />
+  </ItemGroup>
+
+</Project>
