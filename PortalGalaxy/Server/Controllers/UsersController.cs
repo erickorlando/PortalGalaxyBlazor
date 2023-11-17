@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PortalGalaxy.Services.Interfaces;
 using PortalGalaxy.Shared.Request;
+using System.Security.Claims;
 
 namespace PortalGalaxy.Server.Controllers;
 
@@ -33,6 +35,29 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> Register(RegistrarUsuarioDto request)
     {
         var response = await _service.RegisterAsync(request);
+
+        return Ok(response);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SendTokenToResetPassword(GenerateTokenToResetDtoRequest request)
+    {
+        return Ok(await _service.SendTokenToResetPasswordAsync(request));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ResetPassword(ResetPasswordDtoRequest request)
+    {
+        return Ok(await _service.ResetPasswordAsync(request));
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword(ChangePasswordDtoRequest request)
+    {
+        var email = HttpContext.User.Claims.First(p => p.Type == ClaimTypes.Email).Value;
+
+        var response = await _service.ChangePasswordAsync(email, request);
 
         return Ok(response);
     }
