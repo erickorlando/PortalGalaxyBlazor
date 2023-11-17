@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -66,7 +68,7 @@ builder.Services.AddAutoMapper(config =>
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme  = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(x =>
 {
     var secretKey = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"] ??
@@ -107,6 +109,21 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+
+app.Use(async delegate (HttpContext context, Func<Task> next)
+{
+    var authenticated = context.User?.Identity?.IsAuthenticated ?? false;
+    Debug.WriteLine("Usuario autenticado {0}", authenticated);
+
+    if (authenticated)
+    {
+        var vencimiento = context.User!.Claims.First(p => p.Type == ClaimTypes.Expiration).Value!;
+        Debug.WriteLine($"El token vence a las {vencimiento}");
+    }
+
+    await next();
+});
 
 
 app.MapRazorPages();
