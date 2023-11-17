@@ -15,4 +15,8 @@
     <ProjectReference Include="..\Shared\PortalGalaxy.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>

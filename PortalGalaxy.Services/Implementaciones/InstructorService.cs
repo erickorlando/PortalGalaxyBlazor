@@ -39,6 +39,29 @@ public class InstructorService : IInstructorService
         return response;
     }
 
+    public async Task<BaseResponseGeneric<InstructorDtoResponse>> FindByIdAsync(int id)
+    {
+
+        var response = new BaseResponseGeneric<InstructorDtoResponse>();
+
+        try
+        {
+            var data = await _repository.FindAsync(id);
+
+            response.Data = _mapper.Map<InstructorDtoResponse>(data);
+            response.Success = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = "Error al buscar el Instructor";
+            _logger.LogError(ex, "{ErroMessage} {Message}", response.ErrorMessage, ex.Message);
+        }
+
+        return response;
+
+    }
+
+
     public async Task<BaseResponse> AddAsync(InstructorDtoRequest request)
     {
         var response = new BaseResponse();
@@ -53,5 +76,54 @@ public class InstructorService : IInstructorService
             _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
         }
         return response;
+    }
+
+
+    public async Task<BaseResponse> UpdateAsync(int id, InstructorDtoRequest request)
+    {
+
+        var response = new BaseResponse();
+
+        try
+        {
+            var registro = await _repository.FindAsync(id);
+
+            if (registro is not null)
+            {
+                _mapper.Map(request, registro);
+
+                await _repository.UpdateAsync();
+            }
+
+            response.Success = registro != null;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = "Error al actualizar";
+            _logger.LogError(ex, "{ErroMessage} {Message}", response.ErrorMessage, ex.Message);
+        }
+
+        return response;
+
+    }
+
+    public async Task<BaseResponse> DeleteAsync(int id)
+    {
+
+        var response = new BaseResponse();
+
+        try
+        {
+            await _repository.DeleteAsync(id);
+            response.Success = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = "Error al eliminar";
+            _logger.LogError(ex, "{ErroMessage} {Message}", response.ErrorMessage, ex.Message);
+        }
+
+        return response;
+
     }
 }
