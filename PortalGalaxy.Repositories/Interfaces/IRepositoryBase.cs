@@ -11,7 +11,7 @@ public interface IRepositoryBase<TEntity> where TEntity : EntityBase
 
     Task<ICollection<TInfo>> ListAsync<TInfo>(Expression<Func<TEntity, bool>> predicado,
                                               Expression<Func<TEntity, TInfo>> selector,
-                                              string relaciones);
+                                              string? relaciones = null);
 
     Task<TEntity?> FindAsync(int id);
 

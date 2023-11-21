@@ -21,12 +21,12 @@ public class InstructorService : IInstructorService
         _mapper = mapper;
     }
 
-    public async Task<BaseResponseGeneric<ICollection<InstructorDtoResponse>>> ListAsync(string? filtro)
+    public async Task<BaseResponseGeneric<ICollection<InstructorDtoResponse>>> ListAsync(string? filtro, string? nroDocumento, int? categoriaId)
     {
         var response = new BaseResponseGeneric<ICollection<InstructorDtoResponse>>();
         try
         {
-            var collection = await _repository.ListarAsync(filtro);
+            var collection = await _repository.ListAsync(filtro, nroDocumento, categoriaId);
 
             response.Data = _mapper.Map<ICollection<InstructorDtoResponse>>(collection);
             response.Success = true;

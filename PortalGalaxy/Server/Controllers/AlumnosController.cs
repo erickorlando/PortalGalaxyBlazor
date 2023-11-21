@@ -6,24 +6,32 @@ namespace PortalGalaxy.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class InstructoresController : ControllerBase
+public class AlumnosController : ControllerBase
 {
-    private readonly IInstructorService _service;
+    private readonly IAlumnoService _service;
 
-    public InstructoresController(IInstructorService service)
+    public AlumnosController(IAlumnoService service)
     {
         _service = service;
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get(string? filtro, string? nroDocumento, int? categoriaId)
+    public async Task<IActionResult> Get(string? nombre, string? nroDocumento)
     {
-        var response = await _service.ListAsync(filtro, nroDocumento, categoriaId);
+        var response = await _service.ListAsync(nombre, nroDocumento);
 
         return Ok(response);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("Eliminados")]
+    public async Task<IActionResult> Get()
+    {
+        var response = await _service.ListarEliminadosAsync();
+
+        return Ok(response);
+    }
+
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
         var response = await _service.FindByIdAsync(id);
@@ -32,26 +40,32 @@ public class InstructoresController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(InstructorDtoRequest request)
+    public async Task<IActionResult> Post(AlumnoDtoRequest request)
     {
         var response = await _service.AddAsync(request);
 
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, InstructorDtoRequest request)
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Put(int id, AlumnoDtoRequest request)
     {
         var response = await _service.UpdateAsync(id, request);
 
         return response.Success ? Ok(response) : NotFound(response);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
         var response = await _service.DeleteAsync(id);
 
         return response.Success ? Ok(response) : NotFound(response);
+    }
+
+    [HttpPatch("{id:int}")]
+    public async Task<IActionResult> Patch(int id)
+    {
+        return Ok(await _service.ReactivarAsync(id));
     }
 }

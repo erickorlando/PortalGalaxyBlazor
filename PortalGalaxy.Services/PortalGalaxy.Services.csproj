@@ -17,8 +17,4 @@
     <ProjectReference Include="..\PortalGalaxy\Shared\PortalGalaxy.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Implementaciones\" />
-  </ItemGroup>
-
 </Project>

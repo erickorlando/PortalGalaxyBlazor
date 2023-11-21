@@ -5,7 +5,7 @@ namespace PortalGalaxy.Services.Interfaces;
 
 public interface IInstructorService
 {
-    Task<BaseResponseGeneric<ICollection<InstructorDtoResponse>>> ListAsync(string? filtro);
+    Task<BaseResponseGeneric<ICollection<InstructorDtoResponse>>> ListAsync(string? filtro, string? nroDocumento, int? categoriaId);
 
     Task<BaseResponse> AddAsync(InstructorDtoRequest request);
     Task<BaseResponseGeneric<InstructorDtoResponse>> FindByIdAsync(int id);

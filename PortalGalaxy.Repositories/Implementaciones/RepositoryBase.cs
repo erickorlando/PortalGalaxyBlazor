@@ -34,7 +34,7 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where T
     public async Task<ICollection<TInfo>> ListAsync<TInfo>(
         Expression<Func<TEntity, bool>> predicado,
         Expression<Func<TEntity, TInfo>> selector,
-        string relaciones)
+        string? relaciones = null)
     {
         var collection = Context.Set<TEntity>()
             .Where(predicado)
