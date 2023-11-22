@@ -1,17 +1,34 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<GalaxyHeader />
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+<div class="container-fluid">
+    <div class="row gx-2">
+        <div class="col-md-2 d-none d-md-block">
+            <aside class="d-flex flex-column flex-shrink-0 p-1 bg-light">
+                <ul class="nav nav-pills flex-column mb-auto">
+                    <li class="nav-item">
+                        <NavLink class="nav-link active"><i class="bi bi-house me-1"></i>Inicio</NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link link-dark"><i class="bi bi-archive me-1"></i>Categorias</NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link link-dark"><i class="bi bi-tools me-1"></i>Talleres</NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link link-dark"><i class="bi bi-people me-1"></i>Inscripciones</NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link link-dark"><i class="bi bi-reception-4 me-1"></i>Reportes</NavLink>
+                    </li>
+                </ul>
+            </aside>
         </div>
-
-        <article class="content px-4">
+        <div class="col-md-10">
             @Body
-        </article>
-    </main>
+        </div>
+    </div>
 </div>
+
+            

@@ -23,6 +23,7 @@ public class InstructorRepository : RepositoryBase<Instructor>, IInstructorRepos
 
         return await Context.Set<Instructor>()
             .Where(predicate)
+            .IgnoreQueryFilters()
             .Select(p => new InstructorInfo
             {
                 Id = p.Id,

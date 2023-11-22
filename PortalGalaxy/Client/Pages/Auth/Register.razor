@@ -1,0 +1,154 @@
+﻿@page "/register"
+@layout UserLayout
+@inject IToastService ToastService
+@inject IUserProxy UserProxy
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IUbigeoProxy UbigeoProxy
+
+<div class="col-11">
+    <EditForm Model="Request" OnValidSubmit="ValidRegister">
+        
+        <h3>Registrar usuario</h3>
+        <DataAnnotationsValidator />
+        <div class="form-floating mb-1">
+            <input type="text" class="form-control" autocomplete="off" @bind-value="Request.Usuario" id="Usuario"/>
+            <label for="Usuario" class="form-label">Usuario</label>
+            <ValidationMessage For="() => Request.Usuario"></ValidationMessage>
+        </div>
+        <div class="form-floating mb-1">
+            <input type="text" class="form-control" autocomplete="off" @bind-value="Request.NombresCompleto" id="nombrecompleto"/>
+            <label for="nombrecompleto" class="form-label">Nombre completo</label>
+            <ValidationMessage For="() => Request.NombresCompleto"></ValidationMessage>
+        </div>
+        <div class="form-floating mb-1">
+            <input type="text" class="form-control" autocomplete="off" @bind-value="Request.NroDocumento" id="nrodocumento"/>
+            <label for="nrodocumento" class="form-label">Nro Documento</label>
+            <ValidationMessage For="() => Request.NroDocumento"></ValidationMessage>
+        </div>
+        <div class="form-floating mb-1">
+            <input type="email" class="form-control" autocomplete="off" @bind-value="Request.Email" id="email"/>
+            <label for="email" class="form-label">Email</label>
+            <ValidationMessage For="() => Request.Email"></ValidationMessage>
+        </div>
+        <div class="form-floating mb-1">
+            <input type="text" class="form-control" autocomplete="off" @bind-value="Request.Telefono" id="telefono"/>
+            <label for="telefono" class="form-label">Telefono</label>
+            <ValidationMessage For="() => Request.Telefono"></ValidationMessage>
+        </div>
+        <div class="form-floating mb-1">
+            <input type="password" class="form-control" autocomplete="off" @bind-value="Request.Password" id="password"/>
+            <label for="password" class="form-label">Password</label>
+            <ValidationMessage For="() => Request.Password"></ValidationMessage>
+        </div>
+        <div class="form-floating mb-1">
+            <input type="password" class="form-control" autocomplete="off" @bind-value="Request.ConfirmarPassword" id="confirmarpassword"/>
+            <label for="confirmarpassword" class="form-label">Confirmar Password</label>
+            <ValidationMessage For="() => Request.ConfirmarPassword"></ValidationMessage>
+        </div>
+        <div class="form-floating mb-1">
+            <select class="form-select" @onchange="OnDepartamentoSelected" id="comboDpto">
+                <option>-Seleccione-</option>
+                @foreach (var item in Departamentos)
+                {
+                    <option value="@item.Codigo">@item.Nombre</option>
+                }
+            </select>
+            <label for="comboDpto" class="form-label">Departamento</label>
+        </div>
+        <div class="form-floating mb-1">
+            <select class="form-select" id="comboProvincia" @onchange="OnProvinciaSelected">
+                <option>-Seleccione-</option>
+                @foreach (var item in Provincias)
+                {
+                    <option value="@item.Codigo">@item.Nombre</option>
+                }
+            </select>
+            <label for="comboProvincia" class="form-label">Provincia</label>
+        </div>
+        <div class="form-floating mb-1">
+            <InputSelect class="form-select" id="comboDistrito" @bind-Value="Request.CodigoDistrito">
+                <option>-Seleccione-</option>
+                @foreach (var item in Distritos)
+                {
+                    <option value="@item.Codigo">@item.Nombre</option>
+                }
+            </InputSelect>
+            <label for="comboDistrito" class="form-label">Distrito</label>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-lg btn-primary">Registrar</button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+
+    public RegistrarUsuarioDto Request { get; set; } = new();
+
+    public ICollection<DepartamentoModel> Departamentos { get; set; } = new List<DepartamentoModel>();
+
+    public ICollection<ProvinciaModel> Provincias { get; set; } = new List<ProvinciaModel>();
+
+    public ICollection<DistritoModel> Distritos { get; set; } = new List<DistritoModel>();
+
+    public bool IsLoading { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Departamentos = await UbigeoProxy.ListDepartamentos();
+    }
+
+    private async Task OnDepartamentoSelected(ChangeEventArgs args)
+    {
+        var codDpto = args.Value!.ToString()!;
+        if (args.Value != null && !codDpto.StartsWith("-"))
+        {
+            Provincias = await UbigeoProxy.ListProvincias(codDpto);
+            Distritos = new List<DistritoModel>();
+            Request.CodigoDepartamento = codDpto;
+        }
+        else
+        {
+            Provincias = new List<ProvinciaModel>();
+            Distritos = new List<DistritoModel>();
+        }
+    }
+    
+    private async Task OnProvinciaSelected(ChangeEventArgs args)
+    {
+        var codProvincia = args.Value!.ToString()!;
+        if (args.Value != null && !codProvincia.StartsWith("-"))
+        {
+            Distritos = await UbigeoProxy.ListDistritos(codProvincia);
+            Request.CodigoProvincia = codProvincia;
+        }
+        else
+        {
+            Distritos = new List<DistritoModel>();
+        }
+    }
+
+    private async Task ValidRegister()
+    {
+        try
+        {
+            IsLoading = true;
+
+            await UserProxy.Register(Request);
+
+            ToastService.ShowSuccess("Su cuenta ha sido creada");
+
+            NavigationManager.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+}

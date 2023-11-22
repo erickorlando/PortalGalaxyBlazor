@@ -1,0 +1,27 @@
+﻿[
+  {
+    "codigoDpto": "01",
+    "codigo": "01",
+    "nombre": "Lima"
+  },
+  {
+    "codigoDpto": "01",
+    "codigo": "02",
+    "nombre": "Cañete"
+  },
+  {
+    "codigoDpto": "02",
+    "codigo": "03",
+    "nombre": "Piura"
+  },
+  {
+    "codigoDpto": "02",
+    "codigo": "04",
+    "nombre": "Sullana"
+  },
+  {
+    "codigoDpto": "03",
+    "codigo": "05",
+    "nombre": "Maynas"
+  }
+]

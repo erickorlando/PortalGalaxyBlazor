@@ -10,5 +10,7 @@ public class AlumnoConfiguration : IEntityTypeConfiguration<Alumno>
     {
         builder.Property(p => p.FechaInscripcion)
             .HasColumnType("DATE");
+
+        builder.HasQueryFilter(p => p.Estado);
     }
 }

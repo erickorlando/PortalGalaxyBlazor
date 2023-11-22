@@ -25,7 +25,7 @@ public class RegistrarUsuarioDto
     [Compare(nameof(Password))]
     public string ConfirmarPassword { get; set; } = default!;
 
-    public string CodigoDepartamento { get; set; } = default!;
-    public string CodigoProvincia { get; set; } = default!;
-    public string CodigoDistrito { get; set; } = default!;
+    public string CodigoDepartamento { get; set; } = string.Empty;
+    public string CodigoProvincia { get; set; } = string.Empty;
+    public string CodigoDistrito { get; set; } = string.Empty;
 }

@@ -18,7 +18,6 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where T
     public async Task<ICollection<TEntity>> ListAsync()
     {
         return await Context.Set<TEntity>()
-            .Where(p => p.Estado)
             .AsNoTracking()
             .ToListAsync();
     }

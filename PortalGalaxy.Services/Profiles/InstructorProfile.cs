@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using PortalGalaxy.Entities;
+using PortalGalaxy.Entities.Infos;
 using PortalGalaxy.Shared.Request;
 using PortalGalaxy.Shared.Response;
 
@@ -12,5 +13,7 @@ public class InstructorProfile : Profile
         CreateMap<Instructor, InstructorDtoResponse>();
 
         CreateMap<InstructorDtoRequest, Instructor>();
+
+        CreateMap<InstructorInfo, InstructorDtoResponse>();
     }
 }

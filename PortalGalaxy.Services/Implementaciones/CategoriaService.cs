@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using PortalGalaxy.Repositories.Interfaces;
 using PortalGalaxy.Services.Interfaces;
-using PortalGalaxy.Shared.Request;
 using PortalGalaxy.Shared.Response;
 
 namespace PortalGalaxy.Services.Implementaciones;
@@ -40,4 +39,22 @@ public class CategoriaService : ICategoriaService
         return response;
     }
 
+    public async Task<BaseResponse> DeleteAsync(int id)
+    {
+        var response = new BaseResponse();
+
+        try
+        {
+            await _categoriaRepository.DeleteAsync(id);
+
+            response.Success = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = "Error al eliminar la categoria";
+            _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+        }
+
+        return response;
+    }
 }

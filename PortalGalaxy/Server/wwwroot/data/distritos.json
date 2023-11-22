@@ -1,0 +1,72 @@
+﻿[
+  {
+    "codProvincia": "01",
+    "codigo": "01",
+    "nombre": "Lima"
+  },
+  {
+    "codProvincia": "01",
+    "codigo": "02",
+    "nombre": "Ancon"
+  },
+  {
+    "codProvincia": "01",
+    "codigo": "03",
+    "nombre": "Lurin"
+  },
+  {
+    "codProvincia": "01",
+    "codigo": "04",
+    "nombre": "San Isidro"
+  },
+  {
+    "codProvincia": "01",
+    "codigo": "05",
+    "nombre": "Los Olivos"
+  },
+  {
+    "codProvincia": "01",
+    "codigo": "06",
+    "nombre": "Surquillo"
+  },
+  {
+    "codProvincia": "01",
+    "codigo": "07",
+    "nombre": "San Juan de Lurigancho"
+  },
+  {
+    "codProvincia": "02",
+    "codigo": "01",
+    "nombre": "San Vicente"
+  },
+  {
+    "codProvincia": "03",
+    "codigo": "01",
+    "nombre": "Piura"
+  },
+  {
+    "codProvincia": "03",
+    "codigo": "02",
+    "nombre": "Castilla"
+  },
+  {
+    "codProvincia": "04",
+    "codigo": "01",
+    "nombre": "Sullana"
+  },
+  {
+    "codProvincia": "05",
+    "codigo": "01",
+    "nombre": "Iquitos"
+  },
+  {
+    "codProvincia": "05",
+    "codigo": "02",
+    "nombre": "San Juan"
+  },
+  {
+    "codProvincia": "05",
+    "codigo": "03",
+    "nombre": "Punchana"
+  }
+]

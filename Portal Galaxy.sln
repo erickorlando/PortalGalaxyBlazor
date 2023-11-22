@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortalGalaxy.Server", "PortalGalaxy\Server\PortalGalaxy.Server.csproj", "{3FEA6DE4-4B1D-425E-952A-F020F4DA7CFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalGalaxy.Server", "PortalGalaxy\Server\PortalGalaxy.Server.csproj", "{3FEA6DE4-4B1D-425E-952A-F020F4DA7CFE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortalGalaxy.Client", "PortalGalaxy\Client\PortalGalaxy.Client.csproj", "{52F47165-33DE-446E-A4CC-DDF50AFB76D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalGalaxy.Client", "PortalGalaxy\Client\PortalGalaxy.Client.csproj", "{52F47165-33DE-446E-A4CC-DDF50AFB76D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortalGalaxy.Shared", "PortalGalaxy\Shared\PortalGalaxy.Shared.csproj", "{8DAC3C4C-160D-4BE1-A6A1-DDE3D39C5140}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalGalaxy.Shared", "PortalGalaxy\Shared\PortalGalaxy.Shared.csproj", "{8DAC3C4C-160D-4BE1-A6A1-DDE3D39C5140}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortalGalaxy.Entities", "PortalGalaxy.Entities\PortalGalaxy.Entities.csproj", "{18D16EA6-BDB4-46BA-9AB5-5993FD660A0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalGalaxy.Entities", "PortalGalaxy.Entities\PortalGalaxy.Entities.csproj", "{18D16EA6-BDB4-46BA-9AB5-5993FD660A0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortalGalaxy.DataAccess", "PortalGalaxy.DataAccess\PortalGalaxy.DataAccess.csproj", "{5415551E-0D8F-4FB5-832E-402B2D54699D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalGalaxy.DataAccess", "PortalGalaxy.DataAccess\PortalGalaxy.DataAccess.csproj", "{5415551E-0D8F-4FB5-832E-402B2D54699D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortalGalaxy.Repositories", "PortalGalaxy.Repositories\PortalGalaxy.Repositories.csproj", "{1CFDDE47-EE9B-4216-9E55-5183856E170F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalGalaxy.Repositories", "PortalGalaxy.Repositories\PortalGalaxy.Repositories.csproj", "{1CFDDE47-EE9B-4216-9E55-5183856E170F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortalGalaxy.Services", "PortalGalaxy.Services\PortalGalaxy.Services.csproj", "{5627FD67-319E-4C05-AEB8-5C6E47FEB8D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalGalaxy.Services", "PortalGalaxy.Services\PortalGalaxy.Services.csproj", "{5627FD67-319E-4C05-AEB8-5C6E47FEB8D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
