@@ -22,6 +22,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<PortalGalaxyDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("PortalGalaxy"));
+    options.EnableSensitiveDataLogging();
 });
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -63,6 +64,7 @@ builder.Services.AddAutoMapper(config =>
 {
     config.AddProfile<CategoriaProfile>();
     config.AddProfile<InstructorProfile>();
+    config.AddProfile<TallerProfile>();
 });
 
 builder.Services.AddAuthentication(x =>

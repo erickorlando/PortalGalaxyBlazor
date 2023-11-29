@@ -56,6 +56,39 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where T
             .ToListAsync();
     }
 
+    public async Task<(ICollection<TInfo> Collection, int Total)> ListAsync<TInfo, TKey>(
+        Expression<Func<TEntity, bool>> predicado,
+        Expression<Func<TEntity, TInfo>> selector,
+        Expression<Func<TEntity, TKey>> orderBy,
+        string? relaciones = null,
+        int pagina = 1, int filas = 5)
+    {
+        var query = Context.Set<TEntity>()
+            .Where(predicado)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(relaciones))
+        {
+            foreach (var tabla in relaciones.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(tabla);
+            }
+        }
+
+        var collection = await query
+            .OrderBy(orderBy)
+            .Skip((pagina - 1) * filas)
+            .Take(filas)
+            .Select(selector)
+            .ToListAsync();
+
+        var total = await Context.Set<TEntity>()
+            .Where(predicado)
+            .CountAsync();
+
+        return (collection, total);
+    }
+
     public async Task<TEntity?> FindAsync(int id)
     {
         return await Context.Set<TEntity>().FindAsync(id);
