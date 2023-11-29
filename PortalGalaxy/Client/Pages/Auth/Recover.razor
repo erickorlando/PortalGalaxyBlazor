@@ -1,0 +1,63 @@
+﻿@page "/recover"
+@layout UserLayout
+@inject IUserProxy UserProxy
+@inject IToastService ToastService
+@inject SweetAlertService Swal
+@inject NavigationManager NavigationManager
+
+<div class="col-lg-12">
+    <h3 class="text-center">Solicitud de Reseteo de Clave</h3>
+    <EditForm Model="Request" OnValidSubmit="OnSubmit">
+        <DataAnnotationsValidator />
+        <div class="form-floating mb-3">
+            <input class="form-control" id="usuario" type="text" placeholder="usuario"
+                   @bind-value="Request.Usuario" required autocomplete="off"/>
+            <label for="usuario">Usuario</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input class="form-control" id="email" type="email" placeholder="admin@example.com"
+                   @bind-value="Request.Email" autocomplete="off"/>
+            <label for="usuario">Correo</label>
+        </div>
+        <div class="d-grid gap-1 mt-4 mb-0">
+            <button class="btn btn-primary" type="submit">Validar</button>
+        </div>
+    </EditForm>
+    <div class="row justify-content-between mt-4">
+        <div class="col-auto">
+            <NavLink class="link-danger" href="login">Iniciar sesion</NavLink>
+        </div>
+        <div class="col-auto">
+            <NavLink class="link-dark" href="register">Registrarme</NavLink>
+        </div>
+    </div>
+</div>
+
+<LoadingComponent IsLoading="IsLoading" />
+
+@code {
+
+    public GenerateTokenToResetDtoRequest Request { get; set; } = new();
+
+    public bool IsLoading { get; set; }
+
+    private async Task OnSubmit()
+    {
+        try
+        {
+            IsLoading = true;
+            await UserProxy.SendTokenToResetPassword(Request);
+            ToastService.ShowInfo("Se ha enviado un correo con las instrucciones para recuperar su cuenta");
+            NavigationManager.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+}

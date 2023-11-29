@@ -24,11 +24,11 @@
             <input type="password" id="Password" class="form-control" autocomplete="password" @bind-value="LoginDtoRequest.Password" />
             <ValidationMessage For="() => LoginDtoRequest.Password"></ValidationMessage>
         </div>
-        <div class="row justify-content-center">
-            <div class="col">
-                <NavLink href="#" class="link-danger">Olvidé mi clave</NavLink>
+        <div class="row justify-content-between">
+            <div class="col-auto">
+                <NavLink href="recover" class="link-danger">Olvidé mi clave</NavLink>
             </div>
-            <div class="col offset-5">
+            <div class="col-auto">
                 <NavLink class="link-dark" href="register">Registrarme</NavLink>
             </div>
         </div>
@@ -37,6 +37,8 @@
         <button type="submit" class="w-25 btn btn-lg btn-primary">Ingresar</button>
     </div>
 </EditForm>
+
+<LoadingComponent IsLoading="IsLoading" />
 
 @code {
 

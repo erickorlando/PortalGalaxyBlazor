@@ -14,6 +14,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace PortalGalaxy.Services.Implementaciones;
 
@@ -24,18 +26,21 @@ public class UserService : IUserService
     private readonly IOptions<AppSettings> _options;
     private readonly IAlumnoRepository _alumnoRepository;
     private readonly IEmailService _emailService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public UserService(UserManager<GalaxyIdentityUser> userManager,
         ILogger<UserService> logger,
         IOptions<AppSettings> options,
         IAlumnoRepository alumnoRepository,
-        IEmailService emailService)
+        IEmailService emailService,
+        IHttpContextAccessor httpContextAccessor)
     {
         _userManager = userManager;
         _logger = logger;
         _options = options;
         _alumnoRepository = alumnoRepository;
         _emailService = emailService;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<LoginDtoResponse> LoginAsync(LoginDtoRequest request)
@@ -190,12 +195,14 @@ public class UserService : IUserService
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            // codificamos el token
+            token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-            // TODO: Generar el link de reseteo de claves
-            var host = $"https://localhost:7000/reset-password?email={request.Email}&token={token}";
+            var host =
+                $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext!.Request.Host}";
 
             await _emailService.SendEmailAsync(request.Email, "Portal Galaxy - Solicitud de Reseteo de clave",
-                $"Para recuperar su clave, haga click en el siguiente enlace {host}");
+                @$"<p>Para recuperar su clave, haga click en el siguiente enlace <a href=""{host}/reset-password?email={request.Email}&token={token}"">Recuperar clave</a></p>");
 
             response.Success = true;
         }
