@@ -45,19 +45,7 @@
             <button class="btn btn-primary" @onclick="OnNuevo"><i class="bi bi-plus-circle me-1"></i>Nuevo</button>
         </div>
     </div>
-    <div class="row">
-        <div>
-            Mostrar
-            <InputSelect id="pageSize" class="form-select-sm" @bind-Value="BusquedaRequest.Filas">
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="15">15</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-            </InputSelect>
-            registros
-        </div>
-    </div>
+    
     <div class="row mt-4">
         @if (Talleres is null)
         {
@@ -118,6 +106,7 @@
             <button class="btn btn-outline-success"><i class="bi bi-file-excel me-1"></i>Exportar</button>
         </div>
     </div>
+    <DataPager @ref="Paginador" Result="PagedResult" OnPageChanged="PaginaCambiada" OnPageSizeChanged="FilasPorPagina" ></DataPager>
 </div>
 
 <LoadingComponent IsLoading="IsLoading" />
@@ -134,10 +123,21 @@
 
     public BusquedaTallerRequest BusquedaRequest { get; set; } = new() { Pagina = 1, Filas = 5 };
 
+    public DataPager Paginador { get; set; } = default!;
+
+    public PagedResult<TallerDtoResponse> PagedResult { get; set; } = default!;
+
     protected override async Task OnInitializedAsync()
     {
         Categorias = await CategoriaProxy.ListAsync();
         Situaciones = await JsonProxy.ListSituaciones();
+
+        PagedResult = new PagedResult<TallerDtoResponse>()
+        {
+            CurrentPage = BusquedaRequest.Pagina,
+            RowPerPage = BusquedaRequest.Filas
+        };
+
     }
 
     private async Task OnSearch()
@@ -149,6 +149,12 @@
             var response = await TallerProxy.ListAsync(BusquedaRequest);
 
             Talleres = response.Data;
+            if (Talleres is not null)
+            {
+                PagedResult.Results = Talleres;
+                PagedResult.RowCount = Talleres.Count;
+                PagedResult.TotalPages = response.TotalPages;
+            }
 
         }
         catch (Exception ex)
@@ -169,5 +175,23 @@
     private void OnNuevo()
     {
         NavigationManager.NavigateTo("/taller/nuevo");
+    }
+
+    private async Task PaginaCambiada()
+    {
+        IsLoading = true;
+        BusquedaRequest.Pagina = PagedResult.CurrentPage;
+        BusquedaRequest.Filas = PagedResult.RowPerPage;
+
+        await OnSearch();
+    }
+
+    private async Task FilasPorPagina()
+    {
+        Console.WriteLine($"Cambio el tamaño de la pagina a {PagedResult.RowPerPage}");
+        Paginador.Result = PagedResult;
+        BusquedaRequest.Pagina = PagedResult.CurrentPage;
+        BusquedaRequest.Filas = PagedResult.RowPerPage;
+        await OnSearch();
     }
 }
