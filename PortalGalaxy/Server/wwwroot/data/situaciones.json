@@ -1,0 +1,18 @@
+[
+  {
+    "codigo": 0,
+    "nombre": "Por Aperturar"
+  },
+  {
+    "codigo": 1,
+    "nombre": "Aperturada"
+  },
+  {
+    "codigo": 2,
+    "nombre": "Concluida"
+  },
+  {
+    "codigo": 3,
+    "nombre": "Cancelada"
+  }
+]

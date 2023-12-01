@@ -1,0 +1,173 @@
+﻿@page "/taller/list"
+@inject ITallerProxy TallerProxy
+@inject ICategoriaProxy CategoriaProxy
+@inject IJsonProxy JsonProxy
+@inject IToastService ToastService
+@inject NavigationManager NavigationManager
+
+<h2 class="text-uppercase mb-5">Listado de Talleres</h2>
+
+<div class="row">
+    <div class="col">
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre:</label>
+            <input type="text" class="form-control" id="nombre" @bind-value="BusquedaRequest.Nombre" />
+        </div>
+    </div>
+    <div class="col-3">
+        <label for="categoria" class="form-label">Categoría</label>
+        <InputSelect id="categoria" class="form-select" @bind-Value="BusquedaRequest.CategoriaId">
+            <option>Todos</option>
+            @foreach (var item in Categorias)
+            {
+                <option value="@item.Id">@item.Nombre</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="col-3">
+        <label for="situacion" class="form-label">Situacion</label>
+        <InputSelect id="situacion" class="form-select" @bind-Value="BusquedaRequest.Situacion">
+            <option>Todos</option>
+            @foreach (var item in Situaciones)
+            {
+                <option value="@item.Codigo">@item.Nombre</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="row mt-3 justify-content-end">
+        <div class="col-auto">
+            <button class="btn btn-outline-primary" @onclick="OnSearch"><i class="bi bi-search me-1"></i>Buscar</button>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-outline-primary" @onclick="OnLimpiar"><i class="bi bi-eraser-fill me-1"></i>Limpiar</button>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary" @onclick="OnNuevo"><i class="bi bi-plus-circle me-1"></i>Nuevo</button>
+        </div>
+    </div>
+    <div class="row">
+        <div>
+            Mostrar
+            <InputSelect id="pageSize" class="form-select-sm" @bind-Value="BusquedaRequest.Filas">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+            </InputSelect>
+            registros
+        </div>
+    </div>
+    <div class="row mt-4">
+        @if (Talleres is null)
+        {
+            <p class="alert alert-info">Sin resultados</p>
+        }
+        else if (!Talleres.Any())
+        {
+            <p class="alert alert-danger">Sin datos para mostrar</p>
+        }
+        else
+        {
+            @if (!IsLoading)
+            {
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="table-primary">
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>Categoria</th>
+                            <th>Instructor</th>
+                            <th>Fecha</th>
+                            <th>Situacion</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Talleres)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.Nombre</td>
+                                <td>@item.Categoria</td>
+                                <td>@item.Instructor</td>
+                                <td>@item.Fecha</td>
+                                <td>@item.Situacion</td>
+                                <td>
+                                    <i class="bi bi-check2-circle"></i>
+                                    <i class="bi bi-pencil-fill"></i>
+                                    <i class="bi bi-trash-fill"></i>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>Cargando...</p>
+            }
+        }
+
+    </div>
+    <div class="row justify-content-end">
+        <div class="col-auto">
+            <button class="btn btn-outline-danger"><i class="bi bi-filetype-pdf me-1"></i>Exportar</button>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-outline-success"><i class="bi bi-file-excel me-1"></i>Exportar</button>
+        </div>
+    </div>
+</div>
+
+<LoadingComponent IsLoading="IsLoading" />
+
+@code
+{
+    private ICollection<CategoriaDtoResponse> Categorias { get; set; } = new List<CategoriaDtoResponse>();
+
+    private ICollection<SituacionModel> Situaciones { get; set; } = new List<SituacionModel>();
+
+    public ICollection<TallerDtoResponse>? Talleres { get; set; }
+
+    public bool IsLoading { get; set; }
+
+    public BusquedaTallerRequest BusquedaRequest { get; set; } = new() { Pagina = 1, Filas = 5 };
+
+    protected override async Task OnInitializedAsync()
+    {
+        Categorias = await CategoriaProxy.ListAsync();
+        Situaciones = await JsonProxy.ListSituaciones();
+    }
+
+    private async Task OnSearch()
+    {
+        try
+        {
+            IsLoading = true;
+
+            var response = await TallerProxy.ListAsync(BusquedaRequest);
+
+            Talleres = response.Data;
+
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void OnLimpiar()
+    {
+        BusquedaRequest = new() { Pagina = 1, Filas = 5 }; ;
+    }
+
+    private void OnNuevo()
+    {
+        NavigationManager.NavigateTo("/taller/nuevo");
+    }
+}

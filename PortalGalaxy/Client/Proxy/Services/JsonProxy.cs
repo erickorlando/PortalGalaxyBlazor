@@ -4,11 +4,11 @@ using PortalGalaxy.Shared.Response;
 
 namespace PortalGalaxy.Client.Proxy.Services;
 
-public class UbigeoProxy : IUbigeoProxy
+public class JsonProxy : IJsonProxy
 {
     private readonly HttpClient _httpClient;
 
-    public UbigeoProxy(HttpClient httpClient)
+    public JsonProxy(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }
@@ -33,5 +33,12 @@ public class UbigeoProxy : IUbigeoProxy
         var distritos = await _httpClient.GetFromJsonAsync<List<DistritoModel>>("data/distritos.json") ?? new();
 
         return distritos.Where(p => p.CodProvincia == codProvincia).ToList();
+    }
+
+    public async Task<ICollection<SituacionModel>> ListSituaciones()
+    {
+        var situaciones = await _httpClient.GetFromJsonAsync<List<SituacionModel>>("data/situaciones.json") ?? new();
+
+        return situaciones;
     }
 }

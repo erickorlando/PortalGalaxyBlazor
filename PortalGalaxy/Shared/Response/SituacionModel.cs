@@ -1,7 +1,7 @@
 ﻿namespace PortalGalaxy.Shared.Response;
 
-public class DepartamentoModel
+public class SituacionModel
 {
-    public string Codigo { get; set; } = default!;
+    public int Codigo { get; set; }
     public string Nombre { get; set; } = default!;
 }

@@ -4,7 +4,7 @@
 @inject IUserProxy UserProxy
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
-@inject IUbigeoProxy UbigeoProxy
+@inject IJsonProxy JsonProxy
 
 <div class="col-12">
     <EditForm Model="Request" OnValidSubmit="ValidRegister">
@@ -98,7 +98,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Departamentos = await UbigeoProxy.ListDepartamentos();
+        Departamentos = await JsonProxy.ListDepartamentos();
     }
 
     private async Task OnDepartamentoSelected(ChangeEventArgs args)
@@ -106,7 +106,7 @@
         var codDpto = args.Value!.ToString()!;
         if (args.Value != null && !codDpto.StartsWith("-"))
         {
-            Provincias = await UbigeoProxy.ListProvincias(codDpto);
+            Provincias = await JsonProxy.ListProvincias(codDpto);
             Distritos = new List<DistritoModel>();
             Request.CodigoDepartamento = codDpto;
         }
@@ -122,7 +122,7 @@
         var codProvincia = args.Value!.ToString()!;
         if (args.Value != null && !codProvincia.StartsWith("-"))
         {
-            Distritos = await UbigeoProxy.ListDistritos(codProvincia);
+            Distritos = await JsonProxy.ListDistritos(codProvincia);
             Request.CodigoProvincia = codProvincia;
         }
         else

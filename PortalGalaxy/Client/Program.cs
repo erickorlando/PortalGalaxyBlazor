@@ -17,7 +17,9 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 builder.Services.AddScoped<IUserProxy, UserProxy>();
-builder.Services.AddScoped<IUbigeoProxy, UbigeoProxy>();
+builder.Services.AddScoped<IJsonProxy, JsonProxy>();
+builder.Services.AddScoped<ITallerProxy, TallerProxy>();
+builder.Services.AddScoped<ICategoriaProxy, CategoriaProxy>();
 
 builder.Services.AddSweetAlert2();
 builder.Services.AddBlazoredToast();

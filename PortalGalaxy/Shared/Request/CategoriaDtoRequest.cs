@@ -1,6 +1,6 @@
-﻿namespace PortalGalaxy.Shared.Response;
+﻿namespace PortalGalaxy.Shared.Request;
 
-public class DepartamentoModel
+public class CategoriaDtoRequest
 {
     public string Codigo { get; set; } = default!;
     public string Nombre { get; set; } = default!;
