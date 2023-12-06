@@ -134,6 +134,10 @@ app.MapFallbackToFile("index.html");
 
 using (var scope = app.Services.CreateScope())
 {
+    var dbContext = scope.ServiceProvider.GetRequiredService<PortalGalaxyDbContext>();
+
+    dbContext.Database.Migrate();
+
     await UserDataSeeder.Seed(scope.ServiceProvider);
 }
 

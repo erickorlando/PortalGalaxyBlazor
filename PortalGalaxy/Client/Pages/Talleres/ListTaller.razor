@@ -11,7 +11,7 @@
     <div class="col">
         <div class="mb-3">
             <label for="nombre" class="form-label">Nombre:</label>
-            <input type="text" class="form-control" id="nombre" @bind-value="BusquedaRequest.Nombre" />
+            <InputText type="text" class="form-control" id="nombre" @bind-Value="BusquedaRequest.Nombre" />
         </div>
     </div>
     <div class="col-3">
@@ -121,7 +121,7 @@
 
     public bool IsLoading { get; set; }
 
-    public BusquedaTallerRequest BusquedaRequest { get; set; } = new() { Pagina = 1, Filas = 5 };
+    public BusquedaTallerRequest BusquedaRequest { get; set; } = new() { Nombre = string.Empty, Pagina = 1, Filas = 5 };
 
     public DataPager Paginador { get; set; } = default!;
 

@@ -16,7 +16,7 @@ public class TallerProxy : CrudRestHelperBase<TallerDtoRequest, TallerDtoRespons
     {
         var response =
             await ListAsync(
-                $"?filter={request.Nombre}&categoriaId={request.CategoriaId}&situacion={request.Situacion}&pagina={request.Pagina}&filas={request.Filas}");
+                $"?nombre={request.Nombre}&categoriaId={request.CategoriaId}&situacion={request.Situacion}&pagina={request.Pagina}&filas={request.Filas}");
 
         if (response is { Success: true })
         {

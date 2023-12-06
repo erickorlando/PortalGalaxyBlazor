@@ -20,25 +20,25 @@ else
         <div class="col-md-8">
             @if (Result.TotalPages > 1)
             {
-                <ul class="pagination">
-                    <li class="page-item btn" @onclick="OnPreviousClicked"><i class="bi bi-arrow-left-circle"></i></li>
+                <ul class="pagination px-1">
+                    <li class="btn btn-outline-primary" @onclick="OnPreviousClicked"><i class="bi bi-arrow-left-circle"></i></li>
                     @for (int index = 1; index <= Result.TotalPages; index++)
                     {
                         var currentIndex = index;
                         @if (Result.CurrentPage == index)
                         {
-                            <li class="page-item active">
-                                <button class="page-link btn">@index</button>
+                            <li class="bg-primary">
+                                <button class="btn btn-outline-secondary">@index</button>
                             </li>
                         }
                         else
                         {
-                            <li class="page-item">
-                                <button class="page-link btn" @onclick="() => OnPageClicked(currentIndex)">@index</button>
+                            <li class="bg-light">
+                                <button class="btn btn-outline-primary" @onclick="() => OnPageClicked(currentIndex)">@index</button>
                             </li>
                         }
                     }
-                    <li class="page-item btn" @onclick="OnNextClicked"><i class="bi bi-arrow-right-circle"></i></li>
+                    <li class="btn btn-outline-primary" @onclick="OnNextClicked"><i class="bi bi-arrow-right-circle"></i></li>
                 </ul>
             }
         </div>
