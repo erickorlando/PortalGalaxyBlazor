@@ -5,6 +5,7 @@
 @inject IJsonProxy JsonProxy
 @inject IToastService ToastService
 @inject NavigationManager NavigationManager
+@inject SweetAlertService Swal
 @inject IJSRuntime JsRuntime
 @inject HttpClient HttpClient
 
@@ -62,43 +63,63 @@
         {
             @if (!IsLoading)
             {
-                <table class="table table-bordered">
-                    <thead>
-                    <tr class="table-primary">
-                        <th class="text-center">#</th>
-                        <th class="text-center">Nombre</th>
-                        <th class="text-center">Categoria</th>
-                        <th class="text-center">Instructor</th>
-                        <th class="text-center">Fecha</th>
-                        <th class="text-center">Situacion</th>
-                        <th class="text-center">Acción</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var item in Talleres)
-                    {
-                        <tr>
-                            <td class="text-center">@item.Id</td>
-                            <td>@item.Nombre</td>
-                            <td class="text-center">@item.Categoria</td>
-                            <td>@item.Instructor</td>
-                            <td class="text-center">@item.Fecha</td>
-                            <td class="text-center">@item.Situacion</td>
-                            <td class="text-center">
-                                <button type="button" class="btn">
-                                    <i class="bi bi-check2-circle"></i>
-                                </button>
-                                <button type="button" class="btn" @onclick="() => OnEditar(item.Id)">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </button>
-                                <button type="button" class="btn">
-                                    <i class="bi bi-trash-fill"></i>
-                                </button>
-                            </td>
+                <div id="tablaConDatos">
+
+
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr class="table-primary">
+                            <th class="text-center">#</th>
+                            <th class="text-center">Nombre</th>
+                            <th class="text-center">Categoria</th>
+                            <th class="text-center">Instructor</th>
+                            <th class="text-center">Fecha</th>
+                            <th class="text-center">Situacion</th>
+                            @if (!ExportaPdf)
+                            {
+                                <th class="text-center">Acción</th>
+                            }
                         </tr>
-                    }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        @foreach (var item in Talleres)
+                        {
+                            <tr>
+                                <td class="text-center">@item.Id</td>
+                                <td>@item.Nombre</td>
+                                <td class="text-center">@item.Categoria</td>
+                                <td>@item.Instructor</td>
+                                <td class="text-center">@item.Fecha</td>
+                                <td class="text-center">@item.Situacion</td>
+                                @if (!ExportaPdf)
+                                {
+                                    <td class="text-center">
+                                        @switch (item.Situacion)
+                                        {
+                                            case "Por Aperturar":
+                                            case "Aperturada":
+                                                <i class="bi bi-check-circle-fill" style="color: green;"></i>
+                                                break;
+                                            case "Cancelada":
+                                                <i class="bi bi-dash-circle-fill" style="color: red;"></i>       
+                                                break;
+                                            default:
+                                                <i class="bi bi-check2-circle"></i>        
+                                                break;
+                                        }
+                                        <button type="button" class="btn" @onclick="() => OnEditar(item.Id)">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </button>
+                                        <button type="button" class="btn" @onclick="() => OnEliminar(item.Id)">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
             }
             else
             {
@@ -109,7 +130,7 @@
     </div>
     <div class="row justify-content-end">
         <div class="col-auto">
-            <button class="btn btn-outline-danger"><i class="bi bi-filetype-pdf me-1"></i>Exportar</button>
+            <button class="btn btn-outline-danger" @onclick="OnExportarPdf"><i class="bi bi-filetype-pdf me-1"></i>Exportar</button>
         </div>
         <div class="col-auto">
             <button class="btn btn-outline-success" @onclick="OnExportarExcel"><i class="bi bi-file-excel me-1"></i>Exportar</button>
@@ -135,6 +156,8 @@
     public DataPager Paginador { get; set; } = default!;
 
     public PagedResult<TallerDtoResponse> PagedResult { get; set; } = default!;
+
+    private bool ExportaPdf { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -189,6 +212,37 @@
         NavigationManager.NavigateTo($"/taller/editar/{id}");
     }
 
+    private async Task OnEliminar(int id)
+    {
+        try
+        {
+            IsLoading = true;
+
+            var result = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Text = "Desea eliminar el registro?",
+                Title = "Eliminar",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+            if (result.IsConfirmed)
+            {
+                await TallerProxy.DeleteAsync(id);
+
+                await OnSearch();
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
     private async Task PaginaCambiada()
     {
         IsLoading = true;
@@ -211,8 +265,6 @@
 
         try
         {
-            
-
             IsLoading = true;
 
             var plantilla = await HttpClient.GetStreamAsync("assets/xls/TallerTemplate.xlsx");
@@ -230,6 +282,28 @@
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    private async Task OnExportarPdf()
+    {
+        if (Talleres is null) return;
+
+        try
+        {
+            ExportaPdf = true;
+
+            await using var module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/HtmlToPdf.js");
+
+            var contenidoTabla = await JsRuntime.InvokeAsync<string>("getTableHtml");
+    // Generar y descargar el PDF
+            await module.InvokeVoidAsync("generateAndDownloadPdf", $"<h1>Listado de Talleres</h1><hr />{contenidoTabla}", "Talleres.pdf");
+
+            ExportaPdf = false;
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
         }
     }
 }
