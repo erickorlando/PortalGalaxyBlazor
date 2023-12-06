@@ -35,6 +35,11 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Pages\Auth\Login.razor" />
+    <_ContentIncludedByDefault Remove="Shared\ModalInstructor.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Shared\ModalInstructor.razor" />
   </ItemGroup>
 
 </Project>

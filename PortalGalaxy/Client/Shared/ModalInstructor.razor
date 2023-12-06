@@ -1,0 +1,122 @@
+﻿@inject IInstructorProxy InstructorProxy
+@inject IToastService ToastService
+
+<EditForm Model="Model" OnValidSubmit="Grabar">
+    <DataAnnotationsValidator />
+    <div class="row mb-4">
+        <div class="col-8">
+            <label for="nombre" class="form-label">Nombres</label>
+            <input type="text" id="nombre" class="form-control" @bind-value="Model.Nombres" />
+        </div>
+        <div class="col-4">
+            <label for="nrodocumento" class="form-label">Nro Documento</label>
+            <input type="text" id="nrodocumento" class="form-control" @bind-value="Model.NroDocumento" />
+        </div>
+        <div class="row mt-2">
+            <div class="col-6">
+                <div>
+                    <label for="categoria" class="form-label">Categoría</label>
+                    <InputSelect id="categoria" class="form-select" @bind-Value="Model.CategoriaId">
+                        <option>Todos</option>
+                        @foreach (var item in Categorias)
+                        {
+                            <option value="@item.Id">@item.Nombre</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col">
+                <button type="button" class="btn btn-outline-primary" @onclick="Cargar"><i class="bi bi-search me-1"></i>Buscar</button>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-outline-primary"><i class="bi bi-plus-circle me-1"></i>Agregar</button>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        @if (Instructores is null)
+        {
+            <p class="alert alert-warning">Sin resultados para mostrar</p>
+        }
+        else if (!Instructores.Any())
+        {
+            <p class="alert alert-info">No se encontraron registros</p>
+        }
+        else
+        {
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr class="table-primary">
+                        <th>#</th>
+                        <th>Nro Documento</th>
+                        <th>Nombre</th>
+                        <th>Categoria</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Instructores)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.NroDocumento</td>
+                            <td>@item.Nombres</td>
+                            <td>@item.Categoria</td>
+                            <td>
+                                <i class="bi bi-pencil-fill"></i>
+                                <i class="bi bi-trash3-fill"></i>
+                            </td>
+                            <td>
+                                <input type="radio" class="form-switch" name="instructor" id="@item.ForName" @onclick="() => { SeleccionaInstructor(item); }"/>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</EditForm>
+
+@code
+{
+    [Parameter]
+    public ICollection<CategoriaDtoResponse> Categorias { get; set; } = new List<CategoriaDtoResponse>();
+
+    [Parameter]
+    public EventCallback<InstructorDtoResponse> SeleccionInstructor { get; set; }
+
+    private InstructorDtoRequest Model { get; set; } = new();
+
+    private ICollection<InstructorDtoResponse>? Instructores { get; set; }
+
+    public bool IsLoading { get; set; }
+
+    private async Task Cargar()
+    {
+        Instructores = await InstructorProxy.ListAsync();
+    }
+
+    private async Task Grabar()
+    {
+        try
+        {
+            IsLoading = true;
+            await InstructorProxy.CreateAsync(Model);
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void SeleccionaInstructor(InstructorDtoResponse item)
+    {
+        SeleccionInstructor.InvokeAsync(item);
+    }
+}

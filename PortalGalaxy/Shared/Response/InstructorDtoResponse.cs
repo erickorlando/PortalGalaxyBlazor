@@ -7,4 +7,6 @@ public class InstructorDtoResponse
     public string NroDocumento { get; set; } = default!;
     public string Categoria { get; set; } = default!;
     public int CategoriaId { get; set; }
+
+    public string ForName => $"switch_{Id}";
 }
