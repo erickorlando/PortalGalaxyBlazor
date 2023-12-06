@@ -1,0 +1,34 @@
+﻿@page "/categorias/nuevo"
+@inject ICategoriaProxy CategoriaProxy
+@inject IToastService ToastService
+@inject NavigationManager NavigationManager
+
+<EditCategoriaComponent Request="Request" Titulo="Crear Categoria" OnGrabar="OnGrabar" />
+
+<LoadingComponent IsLoading="IsLoading" />
+
+@code {
+
+    private CategoriaDtoRequest Request { get; set; } = new();
+    public bool IsLoading { get; set; }
+
+    public async Task OnGrabar()
+    {
+        try
+        {
+            IsLoading = true;
+            await CategoriaProxy.CreateAsync(Request);
+            ToastService.ShowInfo("Se creó la categoría correctamente");
+            NavigationManager.NavigateTo("/categorias/list");
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+}

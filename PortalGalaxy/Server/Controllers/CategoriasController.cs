@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PortalGalaxy.Services.Interfaces;
+using PortalGalaxy.Shared.Request;
 
 namespace PortalGalaxy.Server.Controllers;
 
@@ -21,6 +22,31 @@ public class CategoriasController : ControllerBase
 
         return Ok(response);
     }
+    
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> Get(int id)
+    {
+        var response = await _service.FindByIdAsync(id);
+
+        return Ok(response);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> Post(CategoriaDtoRequest request)
+    {
+        var response = await _service.AddAsync(request);
+
+        return Ok(response);
+    }
+    
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Put(int id, CategoriaDtoRequest request)
+    {
+        var response = await _service.UpdateAsync(id, request);
+
+        return Ok(response);
+    }
+    
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
