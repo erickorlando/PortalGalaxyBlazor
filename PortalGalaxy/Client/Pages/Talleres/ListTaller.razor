@@ -62,25 +62,25 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr class="table-primary">
-                            <th>#</th>
-                            <th>Nombre</th>
-                            <th>Categoria</th>
-                            <th>Instructor</th>
-                            <th>Fecha</th>
-                            <th>Situacion</th>
-                            <th>Acción</th>
+                            <th class="text-center">#</th>
+                            <th class="text-center">Nombre</th>
+                            <th class="text-center">Categoria</th>
+                            <th class="text-center">Instructor</th>
+                            <th class="text-center">Fecha</th>
+                            <th class="text-center">Situacion</th>
+                            <th class="text-center">Acción</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Talleres)
                         {
                             <tr>
-                                <td>@item.Id</td>
+                                <td class="text-center">@item.Id</td>
                                 <td>@item.Nombre</td>
-                                <td>@item.Categoria</td>
+                                <td class="text-center">@item.Categoria</td>
                                 <td>@item.Instructor</td>
-                                <td>@item.Fecha</td>
-                                <td>@item.Situacion</td>
+                                <td class="text-center">@item.Fecha</td>
+                                <td class="text-center">@item.Situacion</td>
                                 <td>
                                     <i class="bi bi-check2-circle"></i>
                                     <i class="bi bi-pencil-fill"></i>
@@ -189,7 +189,6 @@
     private async Task FilasPorPagina()
     {
         Console.WriteLine($"Cambio el tamaño de la pagina a {PagedResult.RowPerPage}");
-        Paginador.Result = PagedResult;
         BusquedaRequest.Pagina = PagedResult.CurrentPage;
         BusquedaRequest.Filas = PagedResult.RowPerPage;
         await OnSearch();

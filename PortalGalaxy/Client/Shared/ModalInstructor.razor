@@ -1,5 +1,6 @@
 ﻿@inject IInstructorProxy InstructorProxy
 @inject IToastService ToastService
+@inject SweetAlertService Swal
 
 <EditForm Model="Model" OnValidSubmit="Grabar">
     <DataAnnotationsValidator/>
@@ -7,16 +8,18 @@
         <div class="col-8">
             <label for="nombre" class="form-label">Nombres</label>
             <input type="text" id="nombre" class="form-control" @bind-value="Model.Nombres"/>
+            <ValidationMessage For="() => Model.Nombres"/>
         </div>
         <div class="col-4">
             <label for="nrodocumento" class="form-label">Nro Documento</label>
             <input type="text" id="nrodocumento" class="form-control" @bind-value="Model.NroDocumento"/>
+            <ValidationMessage For="() => Model.NroDocumento"/>
         </div>
         <div class="row mt-2 align-items-end">
             <div class="col-7">
                 <div>
                     <label for="categoria" class="form-label">Categoría</label>
-                    <InputSelect id="categoria" class="form-select" @bind-Value="Model.CategoriaId">
+                    <InputSelect id="categoria" class="form-select" @bind-Value="Model.CategoriaSeleccionada">
                         <option>Todos</option>
                         @foreach (var item in Categorias)
                         {
@@ -29,9 +32,10 @@
                 <button type="button" class="btn btn-outline-primary" @onclick="Cargar"><i class="bi bi-search me-1"></i>Buscar</button>
             </div>
             <div class="col-auto">
-                <button type="button" class="btn btn-primary"><i class="bi bi-floppy me-1"></i>Agregar</button>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-floppy me-1"></i>Guardar</button>
             </div>
         </div>
+        <ValidationSummary/>
     </div>
     <div class="row mt-3">
         @if (Instructores is null)
@@ -50,8 +54,8 @@
                     <th>#</th>
                     <th>Nro Documento</th>
                     <th>Nombre</th>
-                    <th>Categoria</th>
-                    <th>Acciones</th>
+                    <th class="text-center">Categoria</th>
+                    <th class="text-center">Acciones</th>
                     <th>&nbsp;</th>
                 </tr>
                 </thead>
@@ -62,12 +66,16 @@
                         <td>@item.Id</td>
                         <td>@item.NroDocumento</td>
                         <td>@item.Nombres</td>
-                        <td>@item.Categoria</td>
-                        <td>
-                            <i class="bi bi-pencil-fill"></i>
-                            <i class="bi bi-trash3-fill"></i>
+                        <td class="text-center">@item.Categoria</td>
+                        <td class="text-center">
+                            <button type="button" class="btn" @onclick="() => Editar(item)">
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
+                            <button type="button" class="btn" @onclick="() => Eliminar(item)">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
                         </td>
-                        <td>
+                        <td class="text-center">
                             <input type="radio" class="form-switch" name="instructor" id="@item.ForName" @onclick="() => { SeleccionaInstructor(item); }"/>
                         </td>
                     </tr>
@@ -76,7 +84,7 @@
             </table>
         }
     </div>
-    <ValidationSummary />
+
 </EditForm>
 
 @code
@@ -91,11 +99,13 @@
 
     private ICollection<InstructorDtoResponse>? Instructores { get; set; }
 
+    private int? InstructorEditado { get; set; }
+
     public bool IsLoading { get; set; }
 
     private async Task Cargar()
     {
-        Instructores = await InstructorProxy.ListAsync(Model.Nombres, Model.NroDocumento, Model.CategoriaId == 0 ? null : Model.CategoriaId);
+        Instructores = await InstructorProxy.ListAsync(Model.Nombres, Model.NroDocumento, Model.CategoriaSeleccionada);
     }
 
     private async Task Grabar()
@@ -103,15 +113,60 @@
         try
         {
             IsLoading = true;
-            await InstructorProxy.CreateAsync(Model);
+            if (Model.CategoriaSeleccionada is null)
+                throw new InvalidOperationException("La categoria es requerida");
+
+            Model.CategoriaId = Model.CategoriaSeleccionada.Value;
+
+            if (InstructorEditado.HasValue)
+            {
+                await InstructorProxy.UpdateAsync(InstructorEditado.Value, Model);
+                InstructorEditado = null;
+            }
+            else
+                await InstructorProxy.CreateAsync(Model);
+
+            Model = new InstructorDtoRequest();
+            await Cargar();
         }
         catch (Exception ex)
         {
-            ToastService.ShowError(ex.Message);
+            await Swal.FireAsync(new SweetAlertOptions("No se pudo crear el instructor")
+            {
+                Text = ex.Message,
+                Icon = SweetAlertIcon.Error
+            });
         }
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    private async Task Editar(InstructorDtoResponse item)
+    {
+        var response = await InstructorProxy.FindByIdAsync(item.Id);
+        InstructorEditado = item.Id;
+        Model.Nombres = response.Nombres;
+        Model.NroDocumento = response.NroDocumento;
+        Model.CategoriaSeleccionada = response.CategoriaId;
+    }
+
+    private async Task Eliminar(InstructorDtoResponse item)
+    {
+        var result = await Swal.FireAsync(new SweetAlertOptions
+        {
+            Text = "Desea eliminar el registro?",
+            Title = "Eliminar",
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true
+        });
+
+        if (result.IsConfirmed)
+        {
+            await InstructorProxy.DeleteAsync(item.Id);
+            Model = new InstructorDtoRequest();
+            await Cargar();
         }
     }
 

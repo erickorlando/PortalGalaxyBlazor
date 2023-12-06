@@ -11,6 +11,7 @@ using PortalGalaxy.Services.Profiles;
 using PortalGalaxy.Shared.Configuracion;
 using Scrutor;
 using System.Text;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +23,14 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<PortalGalaxyDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("PortalGalaxy"));
-    options.EnableSensitiveDataLogging();
+    if (builder.Environment.IsDevelopment())
+        options.EnableSensitiveDataLogging();
+
+    // Ignoramos los warnings por los query filter configurados
+    options.ConfigureWarnings(warnings =>
+        warnings.Ignore(CoreEventId.PossibleIncorrectRequiredNavigationWithQueryFilterInteractionWarning));
+    // Ignoramos los warnings por el sensitive Data Logging
+    options.ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.SensitiveDataLoggingEnabledWarning));
 });
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -113,7 +121,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 
-app.Use(async delegate (HttpContext context, Func<Task> next)
+app.Use(async delegate(HttpContext context, Func<Task> next)
 {
     var authenticated = context.User?.Identity?.IsAuthenticated ?? false;
     Debug.WriteLine("Usuario autenticado {0}", authenticated);

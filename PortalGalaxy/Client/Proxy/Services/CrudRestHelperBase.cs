@@ -1,12 +1,13 @@
-﻿using PortalGalaxy.Client.Proxy.Interfaces;
+﻿using System.Net;
+using PortalGalaxy.Client.Proxy.Interfaces;
 using PortalGalaxy.Shared.Response;
 using System.Net.Http.Json;
 
 namespace PortalGalaxy.Client.Proxy.Services;
 
 public class CrudRestHelperBase<TRequest, TResponse> : RestBase, ICrudRestHelper<TRequest, TResponse>
-where TRequest : class
-where TResponse : class
+    where TRequest : class
+    where TResponse : class
 {
     public CrudRestHelperBase(string baseUrl, HttpClient httpClient)
         : base(baseUrl, httpClient)
@@ -49,27 +50,20 @@ where TResponse : class
     public async Task CreateAsync(TRequest request)
     {
         var response = await HttpClient.PostAsJsonAsync(BaseUrl, request);
-        if (response.IsSuccessStatusCode)
-        {
-            var resultado = await response.Content.ReadFromJsonAsync<BaseResponse>();
-            if (resultado!.Success == false)
-                throw new InvalidOperationException(resultado.ErrorMessage);
-        }
-        else
-            throw new InvalidOperationException(response.ReasonPhrase);
+        var resultado = await response.Content.ReadFromJsonAsync<BaseResponse>();
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+            throw new InvalidOperationException("No todos los datos fueron ingresados correctamente");
+        
+        if (resultado is null || resultado.Success == false)
+            throw new InvalidOperationException(resultado?.ErrorMessage);
     }
 
     public async Task UpdateAsync(int id, TRequest request)
     {
         var response = await HttpClient.PutAsJsonAsync($"{BaseUrl}/{id}", request);
-        if (response.IsSuccessStatusCode)
-        {
-            var resultado = await response.Content.ReadFromJsonAsync<BaseResponse>();
-            if (resultado!.Success == false)
-                throw new InvalidOperationException(resultado.ErrorMessage);
-        }
-        else
-            throw new InvalidOperationException(response.ReasonPhrase);
+        var resultado = await response.Content.ReadFromJsonAsync<BaseResponse>();
+        if (resultado!.Success == false)
+            throw new InvalidOperationException(resultado.ErrorMessage);
     }
 
     public async Task DeleteAsync(int id)
