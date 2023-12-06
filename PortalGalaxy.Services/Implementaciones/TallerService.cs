@@ -44,6 +44,87 @@ public class TallerService : ITallerService
         return response;
     }
 
+    public async Task<BaseResponseGeneric<TallerDtoResponse>> FindByIdAsync(int id)
+    {
+        var response = new BaseResponseGeneric<TallerDtoResponse>();
+        try
+        {
+            var entity = await _repository.FindAsync(id);
+            if (entity == null)
+            {
+                response.ErrorMessage = "No se encontró el Taller";
+                return response;
+            }
+
+            response.Data = _mapper.Map<TallerDtoResponse>(entity);
+            response.Success = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = "Error al buscar un Taller";
+            _logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+        }
+        return response;
+    }
+
+    public async Task<BaseResponse> UpdateAsync(int id, TallerDtoRequest request)
+    {
+        var response = new BaseResponse();
+        try
+        {
+            var entity = await _repository.FindAsync(id);
+            if (entity == null)
+            {
+                response.ErrorMessage = "No se encontró el Taller";
+                return response;
+            }
+
+            _mapper.Map(request, entity);
+            
+            if (request.Base64Portada != null)
+            {
+                entity.PortadaUrl = await _fileUploader.UploadFileAsync(request.Base64Portada, request.ArchivoPortada);
+            }
+            
+            if (request.Base64Temario != null)
+            {
+                entity.TemarioUrl = await _fileUploader.UploadFileAsync(request.Base64Temario, request.ArchivoTemario);
+            }
+            
+            await _repository.UpdateAsync();
+            response.Success = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = "Error al actualizar un Taller";
+            _logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+        }
+        return response;
+    }
+
+    public async Task<BaseResponse> DeleteAsync(int id)
+    {
+        var response = new BaseResponse();
+        try
+        {
+            var entity = await _repository.FindAsync(id);
+            if (entity == null)
+            {
+                response.ErrorMessage = "No se encontró el Taller";
+                return response;
+            }
+
+            await _repository.DeleteAsync(id);
+            response.Success = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = "Error al eliminar un Taller";
+            _logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+        }
+        return response;
+    }
+
     public async Task<PaginationResponse<TallerDtoResponse>> ListAsync(BusquedaTallerRequest request)
     {
         var response = new PaginationResponse<TallerDtoResponse>();
