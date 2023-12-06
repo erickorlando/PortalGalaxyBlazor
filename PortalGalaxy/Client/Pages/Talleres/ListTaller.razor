@@ -1,9 +1,12 @@
 ﻿@page "/taller/list"
+@using PortalGalaxy.Client.Xls
 @inject ITallerProxy TallerProxy
 @inject ICategoriaProxy CategoriaProxy
 @inject IJsonProxy JsonProxy
 @inject IToastService ToastService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+@inject HttpClient HttpClient
 
 <h2 class="text-uppercase mb-5">Listado de Talleres</h2>
 
@@ -109,7 +112,7 @@
             <button class="btn btn-outline-danger"><i class="bi bi-filetype-pdf me-1"></i>Exportar</button>
         </div>
         <div class="col-auto">
-            <button class="btn btn-outline-success"><i class="bi bi-file-excel me-1"></i>Exportar</button>
+            <button class="btn btn-outline-success" @onclick="OnExportarExcel"><i class="bi bi-file-excel me-1"></i>Exportar</button>
         </div>
     </div>
     <DataPager @ref="Paginador" Result="PagedResult" OnPageChanged="PaginaCambiada" OnPageSizeChanged="FilasPorPagina"></DataPager>
@@ -197,9 +200,36 @@
 
     private async Task FilasPorPagina()
     {
-        Console.WriteLine($"Cambio el tamaño de la pagina a {PagedResult.RowPerPage}");
         BusquedaRequest.Pagina = PagedResult.CurrentPage;
         BusquedaRequest.Filas = PagedResult.RowPerPage;
         await OnSearch();
+    }
+
+    private async Task OnExportarExcel()
+    {
+        if (Talleres is null) return;
+
+        try
+        {
+            
+
+            IsLoading = true;
+
+            var plantilla = await HttpClient.GetStreamAsync("assets/xls/TallerTemplate.xlsx");
+
+            var excel = new PlantillaXls();
+            var xlsStream = excel.GenerarPlantillaTaller(plantilla, Talleres);
+
+            await JsRuntime.InvokeVoidAsync("BlazorDownloadFile", "Talleres.xlsx", xlsStream);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 }
