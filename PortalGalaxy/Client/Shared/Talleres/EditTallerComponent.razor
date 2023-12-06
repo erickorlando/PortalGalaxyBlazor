@@ -1,0 +1,184 @@
+﻿@inject SweetAlertService Swal
+
+<h2 class="text-uppercase mt-2 mb-5">@Titulo</h2>
+
+<EditForm Model="Request" OnValidSubmit="OnGrabar">
+    <DataAnnotationsValidator/>
+    <div class="row gx-5 mb-3">
+        <div class="col-7">
+            <label for="nombre" class="form-label">Nombre</label>
+            <InputText class="form-control" id="nombre" @bind-Value="Request.Nombre"></InputText>
+            <ValidationMessage For="() => Request.Nombre"/>
+        </div>
+        <div class="col-5">
+            <label for="categoria" class="form-label">Categoría</label>
+            <InputSelect id="categoria" class="form-select" @bind-Value="Request.CategoriaId">
+                <option>Todos</option>
+                @foreach (var item in Categorias)
+                {
+                    <option value="@item.Id">@item.Nombre</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <label for="instructor" class="form-label">Instructor</label>
+            <div class="input-group">
+                <input type="text" class="form-control" id="instructor" @bind-value="NombreInstructor"/>
+                <span class="input-group-text" style="cursor: pointer"
+                      data-bs-toggle="modal" data-bs-target="#instructorModal">
+                    <i class="bi bi-person-bounding-box"></i>
+                </span>
+            </div>
+        </div>
+        <div class="col">
+            <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+            <input type="date" class="form-control" @bind-value="Request.FechaInicio" id="fechaInicio"/>
+        </div>
+        <div class="col">
+            <label for="horaInicio" class="form-label">Hora Inicio</label>
+            <input type="time" class="form-control" @bind-value="Request.HoraInicio" id="horaInicio"/>
+        </div>
+        <div class="col">
+            <label for="situacion" class="form-label">Situacion</label>
+            <InputSelect id="situacion" class="form-select" @bind-Value="Request.Situacion">
+                <option>Todos</option>
+                @foreach (var item in Situaciones)
+                {
+                    <option value="@item.Codigo">@item.Nombre</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="row mt-3">
+            <div class="col">
+                <label for="base64portada" class="form-label">Portada</label>
+                <InputFile id="base64portada" class="form-control" accept="image/png, image/jpeg, image/webp" OnChange="OnPortadaChanged"/>
+            </div>
+            <div class="col">
+                <label for="base64temario" class="form-label">Temario</label>
+                <InputFile id="base64temario" class="form-control"
+                       accept="application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation
+, application/pdf" OnChange="OnTemarioChanged"/>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-5">
+                <div class="card">
+                    <div class="card-header bg-dark">
+                        <label class="text-white">Vista Previa</label>
+                    </div>
+                    <div class="card-body text-center">
+                        @if (Request.Base64Portada is not null)
+                        {
+                            <img src="data:image/jpeg;base64,@Request.Base64Portada" alt="@Request.Nombre" style="width: 300px"/>
+                        }
+                        else
+                        {
+                            var origen = string.IsNullOrEmpty(Request.PortadaUrl) ? "assets/images/sinimagen.jpeg" : Request.PortadaUrl;
+                            <img src="@origen" alt="@Request.Nombre" class="imagen"/>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col offset-4">
+                <NavLink class="btn btn-outline-primary" href="taller/list"><i class="bi bi-x-circle me-1"></i>Cancelar</NavLink>
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-floppy me-1"></i>Guardar</button>
+            </div>
+        </div>
+    </div>
+    <ValidationSummary />
+</EditForm>
+
+<div class="modal fade" id="instructorModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h1 class="modal-title fs-5">Buscar Instructor</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ModalInstructor Categorias="Categorias" SeleccionInstructor="InstructorSeleccionado"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [EditorRequired]
+    [Parameter]
+    public string Titulo { get; set; } = default!;
+
+    [EditorRequired]
+    [Parameter]
+    public ICollection<CategoriaDtoResponse> Categorias { get; set; } = new List<CategoriaDtoResponse>();
+
+    [EditorRequired]
+    [Parameter]
+    public ICollection<SituacionModel> Situaciones { get; set; } = new List<SituacionModel>();
+
+    [EditorRequired]
+    [Parameter]
+    public EventCallback<TallerDtoRequest> OnGuardar { get; set; }
+
+    public TallerDtoRequest Request { get; set; } = new();
+
+    public InstructorDtoResponse? Seleccionado { get; set; }
+
+    public string NombreInstructor { get; set; } = string.Empty;
+
+    private long _maxFileSize = 150 * 1024 * 1024;
+
+    private void OnGrabar()
+    {
+        if (Seleccionado is not null)
+            Request.InstructorId = Seleccionado.Id;
+        
+        OnGuardar.InvokeAsync(Request);
+    }
+
+    private void InstructorSeleccionado(InstructorDtoResponse item)
+    {
+        NombreInstructor = item.Nombres;
+        Request.InstructorId = item.Id;
+    }
+    
+    private async Task OnPortadaChanged(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var imagen = e.File;
+            var buffer = new byte[imagen.Size];
+            _ = await imagen.OpenReadStream(_maxFileSize).ReadAsync(buffer);
+
+            Request.Base64Portada = Convert.ToBase64String(buffer);
+            Request.ArchivoPortada = imagen.Name;
+            Request.PortadaUrl = null;
+        }
+        catch (Exception ex)
+        {
+            await Swal.FireAsync("Error de Archivo", ex.Message);
+        }
+    }
+    
+    private async Task OnTemarioChanged(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var temario = e.File;
+            var buffer = new byte[temario.Size];
+            _ = await temario.OpenReadStream(_maxFileSize).ReadAsync(buffer);
+
+            Request.Base64Temario = Convert.ToBase64String(buffer);
+            Request.ArchivoTemario = temario.Name;
+        }
+        catch (Exception ex)
+        {
+            await Swal.FireAsync("Error de Archivo", ex.Message);
+        }
+    }
+
+}

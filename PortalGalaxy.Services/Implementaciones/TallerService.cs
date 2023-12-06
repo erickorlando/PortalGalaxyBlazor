@@ -13,12 +13,14 @@ public class TallerService : ITallerService
     private readonly ITallerRepository _repository;
     private readonly ILogger<TallerService> _logger;
     private readonly IMapper _mapper;
+    private readonly IFileUploader _fileUploader;
 
-    public TallerService(ITallerRepository repository, ILogger<TallerService> logger, IMapper mapper)
+    public TallerService(ITallerRepository repository, ILogger<TallerService> logger, IMapper mapper, IFileUploader fileUploader)
     {
         _repository = repository;
         _logger = logger;
         _mapper = mapper;
+        _fileUploader = fileUploader;
     }
 
     public async Task<BaseResponse> AddAsync(TallerDtoRequest request)
@@ -27,6 +29,9 @@ public class TallerService : ITallerService
         try
         {
             var entity = _mapper.Map<Taller>(request);
+
+            entity.PortadaUrl = await _fileUploader.UploadFileAsync(request.Base64Portada, request.ArchivoPortada);
+            entity.TemarioUrl = await _fileUploader.UploadFileAsync(request.Base64Temario, request.ArchivoTemario);
 
             await _repository.AddAsync(entity);
             response.Success = true;

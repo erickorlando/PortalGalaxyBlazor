@@ -117,7 +117,7 @@
 
     private ICollection<SituacionModel> Situaciones { get; set; } = new List<SituacionModel>();
 
-    public ICollection<TallerDtoResponse>? Talleres { get; set; }
+    private ICollection<TallerDtoResponse>? Talleres { get; set; }
 
     public bool IsLoading { get; set; }
 
@@ -169,7 +169,7 @@
 
     private void OnLimpiar()
     {
-        BusquedaRequest = new() { Pagina = 1, Filas = 5 }; ;
+        BusquedaRequest = new() { Pagina = 1, Filas = 5 }; 
     }
 
     private void OnNuevo()
