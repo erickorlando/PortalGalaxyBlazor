@@ -16,6 +16,7 @@ public class TallerProfile : Profile
         CreateMap<TallerInfo, TallerDtoResponse>()
             .ForMember(d => d.Fecha, o => o.MapFrom(x => x.Fecha.ToString("d", configuracionRegional)));
 
-        CreateMap<TallerDtoRequest, Taller>();
+        CreateMap<TallerDtoRequest, Taller>()
+            .ReverseMap();
     }
 }

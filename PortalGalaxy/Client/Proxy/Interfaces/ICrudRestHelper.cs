@@ -2,7 +2,7 @@
 
 namespace PortalGalaxy.Client.Proxy.Interfaces;
 
-public interface ICrudRestHelper<in TRequest, TResponse>
+public interface ICrudRestHelper<TRequest, TResponse>
 where TRequest : class
 where TResponse : class
 {
@@ -10,7 +10,7 @@ where TResponse : class
 
     Task<ICollection<TResponse>> ListAsync();
 
-    Task<TResponse> FindByIdAsync(int id);
+    Task<TRequest> FindByIdAsync(int id);
 
     Task CreateAsync(TRequest request);
 

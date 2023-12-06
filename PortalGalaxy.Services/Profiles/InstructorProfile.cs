@@ -12,7 +12,8 @@ public class InstructorProfile : Profile
     {
         CreateMap<Instructor, InstructorDtoResponse>();
 
-        CreateMap<InstructorDtoRequest, Instructor>();
+        CreateMap<InstructorDtoRequest, Instructor>()
+            .ReverseMap();
 
         CreateMap<InstructorInfo, InstructorDtoResponse>();
     }

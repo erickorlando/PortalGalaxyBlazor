@@ -87,6 +87,8 @@
 
 </EditForm>
 
+<LoadingComponent IsLoading="IsLoading" />
+
 @code
 {
     [Parameter]
@@ -145,11 +147,8 @@
 
     private async Task Editar(InstructorDtoResponse item)
     {
-        var response = await InstructorProxy.FindByIdAsync(item.Id);
+        Model = await InstructorProxy.FindByIdAsync(item.Id);
         InstructorEditado = item.Id;
-        Model.Nombres = response.Nombres;
-        Model.NroDocumento = response.NroDocumento;
-        Model.CategoriaSeleccionada = response.CategoriaId;
     }
 
     private async Task Eliminar(InstructorDtoResponse item)

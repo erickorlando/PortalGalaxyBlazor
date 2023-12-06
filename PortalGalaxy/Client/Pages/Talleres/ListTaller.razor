@@ -11,7 +11,7 @@
     <div class="col">
         <div class="mb-3">
             <label for="nombre" class="form-label">Nombre:</label>
-            <InputText type="text" class="form-control" id="nombre" @bind-Value="BusquedaRequest.Nombre" />
+            <InputText type="text" class="form-control" id="nombre" @bind-Value="BusquedaRequest.Nombre"/>
         </div>
     </div>
     <div class="col-3">
@@ -45,7 +45,7 @@
             <button class="btn btn-primary" @onclick="OnNuevo"><i class="bi bi-plus-circle me-1"></i>Nuevo</button>
         </div>
     </div>
-    
+
     <div class="row mt-4">
         @if (Talleres is null)
         {
@@ -61,33 +61,39 @@
             {
                 <table class="table table-bordered">
                     <thead>
-                        <tr class="table-primary">
-                            <th class="text-center">#</th>
-                            <th class="text-center">Nombre</th>
-                            <th class="text-center">Categoria</th>
-                            <th class="text-center">Instructor</th>
-                            <th class="text-center">Fecha</th>
-                            <th class="text-center">Situacion</th>
-                            <th class="text-center">Acción</th>
-                        </tr>
+                    <tr class="table-primary">
+                        <th class="text-center">#</th>
+                        <th class="text-center">Nombre</th>
+                        <th class="text-center">Categoria</th>
+                        <th class="text-center">Instructor</th>
+                        <th class="text-center">Fecha</th>
+                        <th class="text-center">Situacion</th>
+                        <th class="text-center">Acción</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Talleres)
-                        {
-                            <tr>
-                                <td class="text-center">@item.Id</td>
-                                <td>@item.Nombre</td>
-                                <td class="text-center">@item.Categoria</td>
-                                <td>@item.Instructor</td>
-                                <td class="text-center">@item.Fecha</td>
-                                <td class="text-center">@item.Situacion</td>
-                                <td>
+                    @foreach (var item in Talleres)
+                    {
+                        <tr>
+                            <td class="text-center">@item.Id</td>
+                            <td>@item.Nombre</td>
+                            <td class="text-center">@item.Categoria</td>
+                            <td>@item.Instructor</td>
+                            <td class="text-center">@item.Fecha</td>
+                            <td class="text-center">@item.Situacion</td>
+                            <td class="text-center">
+                                <button type="button" class="btn">
                                     <i class="bi bi-check2-circle"></i>
+                                </button>
+                                <button type="button" class="btn" @onclick="() => OnEditar(item.Id)">
                                     <i class="bi bi-pencil-fill"></i>
+                                </button>
+                                <button type="button" class="btn">
                                     <i class="bi bi-trash-fill"></i>
-                                </td>
-                            </tr>
-                        }
+                                </button>
+                            </td>
+                        </tr>
+                    }
                     </tbody>
                 </table>
             }
@@ -106,10 +112,10 @@
             <button class="btn btn-outline-success"><i class="bi bi-file-excel me-1"></i>Exportar</button>
         </div>
     </div>
-    <DataPager @ref="Paginador" Result="PagedResult" OnPageChanged="PaginaCambiada" OnPageSizeChanged="FilasPorPagina" ></DataPager>
+    <DataPager @ref="Paginador" Result="PagedResult" OnPageChanged="PaginaCambiada" OnPageSizeChanged="FilasPorPagina"></DataPager>
 </div>
 
-<LoadingComponent IsLoading="IsLoading" />
+<LoadingComponent IsLoading="IsLoading"/>
 
 @code
 {
@@ -137,7 +143,6 @@
             CurrentPage = BusquedaRequest.Pagina,
             RowPerPage = BusquedaRequest.Filas
         };
-
     }
 
     private async Task OnSearch()
@@ -155,7 +160,6 @@
                 PagedResult.RowCount = Talleres.Count;
                 PagedResult.TotalPages = response.TotalPages;
             }
-
         }
         catch (Exception ex)
         {
@@ -169,12 +173,17 @@
 
     private void OnLimpiar()
     {
-        BusquedaRequest = new() { Pagina = 1, Filas = 5 }; 
+        BusquedaRequest = new() { Pagina = 1, Filas = 5 };
     }
 
     private void OnNuevo()
     {
         NavigationManager.NavigateTo("/taller/nuevo");
+    }
+
+    private void OnEditar(int id)
+    {
+        NavigationManager.NavigateTo($"/taller/editar/{id}");
     }
 
     private async Task PaginaCambiada()

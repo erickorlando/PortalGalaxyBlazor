@@ -36,9 +36,9 @@ public class CrudRestHelperBase<TRequest, TResponse> : RestBase, ICrudRestHelper
         throw new InvalidOperationException(response.ErrorMessage);
     }
 
-    public async Task<TResponse> FindByIdAsync(int id)
+    public async Task<TRequest> FindByIdAsync(int id)
     {
-        var response = await HttpClient.GetFromJsonAsync<BaseResponseGeneric<TResponse>>($"{BaseUrl}/{id}");
+        var response = await HttpClient.GetFromJsonAsync<BaseResponseGeneric<TRequest>>($"{BaseUrl}/{id}");
         if (response!.Success)
         {
             return response.Data!;

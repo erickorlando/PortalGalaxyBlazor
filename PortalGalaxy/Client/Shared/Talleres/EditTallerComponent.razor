@@ -58,7 +58,7 @@
             <div class="col">
                 <label for="base64temario" class="form-label">Temario</label>
                 <InputFile id="base64temario" class="form-control"
-                       accept="application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation
+                           accept="application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation
 , application/pdf" OnChange="OnTemarioChanged"/>
             </div>
         </div>
@@ -71,15 +71,22 @@
                     <div class="card-body text-center">
                         @if (Request.Base64Portada is not null)
                         {
-                            <img src="data:image/jpeg;base64,@Request.Base64Portada" alt="@Request.Nombre" style="width: 300px"/>
+                            <img src="data:image/jpeg;base64,@Request.Base64Portada" alt="@Request.Nombre" style="width: 330px"/>
                         }
                         else
                         {
                             var origen = string.IsNullOrEmpty(Request.PortadaUrl) ? "assets/images/sinimagen.jpeg" : Request.PortadaUrl;
-                            <img src="@origen" alt="@Request.Nombre" style="width: 300px"/>
+                            <img src="@origen" alt="@Request.Nombre" style="width: 330px"/>
+                        }
+                    </div>
+                    <div class="card-footer text-center">
+                        @if (!string.IsNullOrEmpty(Request.TemarioUrl))
+                        {
+                            <a href="@Request.TemarioUrl" target="_blank" class="btn btn-outline-primary"><i class="bi bi-eye me-1"></i>Ver Temario</a>
                         }
                     </div>
                 </div>
+
             </div>
             <div class="col offset-4">
                 <NavLink class="btn btn-outline-primary" href="taller/list"><i class="bi bi-x-circle me-1"></i>Cancelar</NavLink>
@@ -89,7 +96,7 @@
             </div>
         </div>
     </div>
-    <ValidationSummary />
+    <ValidationSummary/>
 </EditForm>
 
 <div class="modal fade" id="instructorModal" tabindex="-1">
@@ -124,10 +131,12 @@
     [Parameter]
     public EventCallback<TallerDtoRequest> OnGuardar { get; set; }
 
+    [Parameter]
     public TallerDtoRequest Request { get; set; } = new();
 
-    public InstructorDtoResponse? Seleccionado { get; set; }
+    private InstructorDtoResponse? Seleccionado { get; set; }
 
+    [Parameter]
     public string NombreInstructor { get; set; } = string.Empty;
 
     private long _maxFileSize = 150 * 1024 * 1024;
@@ -136,7 +145,7 @@
     {
         if (Seleccionado is not null)
             Request.InstructorId = Seleccionado.Id;
-        
+
         OnGuardar.InvokeAsync(Request);
     }
 
@@ -144,8 +153,9 @@
     {
         NombreInstructor = item.Nombres;
         Request.InstructorId = item.Id;
+        Seleccionado = item;
     }
-    
+
     private async Task OnPortadaChanged(InputFileChangeEventArgs e)
     {
         try
@@ -163,7 +173,7 @@
             await Swal.FireAsync("Error de Archivo", ex.Message);
         }
     }
-    
+
     private async Task OnTemarioChanged(InputFileChangeEventArgs e)
     {
         try

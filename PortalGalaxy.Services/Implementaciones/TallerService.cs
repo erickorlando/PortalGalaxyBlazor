@@ -44,9 +44,9 @@ public class TallerService : ITallerService
         return response;
     }
 
-    public async Task<BaseResponseGeneric<TallerDtoResponse>> FindByIdAsync(int id)
+    public async Task<BaseResponseGeneric<TallerDtoRequest>> FindByIdAsync(int id)
     {
-        var response = new BaseResponseGeneric<TallerDtoResponse>();
+        var response = new BaseResponseGeneric<TallerDtoRequest>();
         try
         {
             var entity = await _repository.FindAsync(id);
@@ -56,7 +56,7 @@ public class TallerService : ITallerService
                 return response;
             }
 
-            response.Data = _mapper.Map<TallerDtoResponse>(entity);
+            response.Data = _mapper.Map<TallerDtoRequest>(entity);
             response.Success = true;
         }
         catch (Exception ex)
