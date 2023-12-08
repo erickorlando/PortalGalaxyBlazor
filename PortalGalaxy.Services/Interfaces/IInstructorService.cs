@@ -8,7 +8,7 @@ public interface IInstructorService
     Task<BaseResponseGeneric<ICollection<InstructorDtoResponse>>> ListAsync(string? filtro, string? nroDocumento, int? categoriaId);
 
     Task<BaseResponse> AddAsync(InstructorDtoRequest request);
-    Task<BaseResponseGeneric<InstructorDtoResponse>> FindByIdAsync(int id);
+    Task<BaseResponseGeneric<InstructorDtoRequest>> FindByIdAsync(int id);
     Task<BaseResponse> UpdateAsync(int id, InstructorDtoRequest request);
     Task<BaseResponse> DeleteAsync(int id);
 }

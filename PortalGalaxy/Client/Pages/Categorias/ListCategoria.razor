@@ -1,0 +1,107 @@
+﻿@page "/categorias/list"
+@inject ICategoriaProxy CategoriaProxy
+@inject NavigationManager NavigationManager
+@inject SweetAlertService Swal
+@inject IToastService ToastService
+
+<h2 class="text-uppercase mb-5">Listado de Categorias</h2>
+<div class="row mt-3 justify-content-end">
+
+    <div class="col-auto">
+        <button class="btn btn-primary" @onclick="OnNuevo"><i class="bi bi-plus-circle me-1"></i>Nuevo</button>
+    </div>
+</div>
+<div class="row mt-4 p-2">
+    @if (Categorias is null)
+    {
+        <p class="alert alert-info">Sin resultados</p>
+    }
+    else if (!Categorias.Any())
+    {
+        <p class="alert alert-danger">Sin datos para mostrar</p>
+    }
+    else
+    {
+        <table class="table table-hover table-bordered">
+            <thead>
+            <tr class="table-primary">
+                <th class="text-center">#</th>
+                <th>Nombre</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Categorias)
+            {
+                <tr>
+                    <td class="text-center">@item.Id</td>
+                    <td class="text-center">@item.Nombre</td>
+                    <td class="text-center">
+                        <button type="button" class="btn" @onclick="() => OnEditar(item.Id)">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button type="button" class="btn" @onclick="() => OnEliminar(item.Id)">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</div>
+
+<LoadingComponent IsLoading="IsLoading" />
+
+@code {
+
+    private ICollection<CategoriaDtoResponse>? Categorias { get; set; }
+
+    public bool IsLoading { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await OnSearch();
+    }
+
+    private async Task OnSearch()
+    {
+        Categorias = await CategoriaProxy.ListAsync();
+    }
+
+    private void OnNuevo()
+    {
+        NavigationManager.NavigateTo("/categorias/nuevo");
+    }
+
+    private void OnEditar(int id)
+    {
+        NavigationManager.NavigateTo($"/categorias/editar/{id}");
+    }
+
+    private async Task OnEliminar(int id)
+    {
+        try
+        {
+            var result = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Text = "Desea eliminar el registro?",
+                Title = "Eliminar",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+            if (result.IsConfirmed)
+            {
+                await CategoriaProxy.DeleteAsync(id);
+
+                await OnSearch();
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+    }
+
+}

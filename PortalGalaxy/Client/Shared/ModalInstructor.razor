@@ -1,22 +1,25 @@
 ﻿@inject IInstructorProxy InstructorProxy
 @inject IToastService ToastService
+@inject SweetAlertService Swal
 
 <EditForm Model="Model" OnValidSubmit="Grabar">
-    <DataAnnotationsValidator />
+    <DataAnnotationsValidator/>
     <div class="row mb-4">
         <div class="col-8">
             <label for="nombre" class="form-label">Nombres</label>
-            <input type="text" id="nombre" class="form-control" @bind-value="Model.Nombres" />
+            <input type="text" id="nombre" class="form-control" @bind-value="Model.Nombres"/>
+            <ValidationMessage For="() => Model.Nombres"/>
         </div>
         <div class="col-4">
             <label for="nrodocumento" class="form-label">Nro Documento</label>
-            <input type="text" id="nrodocumento" class="form-control" @bind-value="Model.NroDocumento" />
+            <input type="text" id="nrodocumento" class="form-control" @bind-value="Model.NroDocumento"/>
+            <ValidationMessage For="() => Model.NroDocumento"/>
         </div>
-        <div class="row mt-2">
-            <div class="col-6">
+        <div class="row mt-2 align-items-end">
+            <div class="col-7">
                 <div>
                     <label for="categoria" class="form-label">Categoría</label>
-                    <InputSelect id="categoria" class="form-select" @bind-Value="Model.CategoriaId">
+                    <InputSelect id="categoria" class="form-select" @bind-Value="Model.CategoriaSeleccionada">
                         <option>Todos</option>
                         @foreach (var item in Categorias)
                         {
@@ -25,20 +28,19 @@
                     </InputSelect>
                 </div>
             </div>
-        </div>
-        <div class="row mt-2">
-            <div class="col">
+            <div class="col offset-1">
                 <button type="button" class="btn btn-outline-primary" @onclick="Cargar"><i class="bi bi-search me-1"></i>Buscar</button>
             </div>
             <div class="col-auto">
-                <button type="button" class="btn btn-outline-primary"><i class="bi bi-plus-circle me-1"></i>Agregar</button>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-floppy me-1"></i>Guardar</button>
             </div>
         </div>
+        <ValidationSummary/>
     </div>
     <div class="row mt-3">
         @if (Instructores is null)
         {
-            <p class="alert alert-warning">Sin resultados para mostrar</p>
+            <strong>Sin resultados para mostrar</strong>
         }
         else if (!Instructores.Any())
         {
@@ -48,36 +50,44 @@
         {
             <table class="table table-hover table-bordered">
                 <thead>
-                    <tr class="table-primary">
-                        <th>#</th>
-                        <th>Nro Documento</th>
-                        <th>Nombre</th>
-                        <th>Categoria</th>
-                        <th>Acciones</th>
-                    </tr>
+                <tr class="table-primary">
+                    <th>#</th>
+                    <th>Nro Documento</th>
+                    <th>Nombre</th>
+                    <th class="text-center">Categoria</th>
+                    <th class="text-center">Acciones</th>
+                    <th>&nbsp;</th>
+                </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Instructores)
-                    {
-                        <tr>
-                            <td>@item.Id</td>
-                            <td>@item.NroDocumento</td>
-                            <td>@item.Nombres</td>
-                            <td>@item.Categoria</td>
-                            <td>
+                @foreach (var item in Instructores)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.NroDocumento</td>
+                        <td>@item.Nombres</td>
+                        <td class="text-center">@item.Categoria</td>
+                        <td class="text-center">
+                            <button type="button" class="btn" @onclick="() => Editar(item)">
                                 <i class="bi bi-pencil-fill"></i>
+                            </button>
+                            <button type="button" class="btn" @onclick="() => Eliminar(item)">
                                 <i class="bi bi-trash3-fill"></i>
-                            </td>
-                            <td>
-                                <input type="radio" class="form-switch" name="instructor" id="@item.ForName" @onclick="() => { SeleccionaInstructor(item); }"/>
-                            </td>
-                        </tr>
-                    }
+                            </button>
+                        </td>
+                        <td class="text-center">
+                            <input type="radio" class="form-switch" name="instructor" id="@item.ForName" @onclick="() => { SeleccionaInstructor(item); }"/>
+                        </td>
+                    </tr>
+                }
                 </tbody>
             </table>
         }
     </div>
+
 </EditForm>
+
+<LoadingComponent IsLoading="IsLoading" />
 
 @code
 {
@@ -91,11 +101,13 @@
 
     private ICollection<InstructorDtoResponse>? Instructores { get; set; }
 
+    private int? InstructorEditado { get; set; }
+
     public bool IsLoading { get; set; }
 
     private async Task Cargar()
     {
-        Instructores = await InstructorProxy.ListAsync();
+        Instructores = await InstructorProxy.ListAsync(Model.Nombres, Model.NroDocumento, Model.CategoriaSeleccionada);
     }
 
     private async Task Grabar()
@@ -103,15 +115,57 @@
         try
         {
             IsLoading = true;
-            await InstructorProxy.CreateAsync(Model);
+            if (Model.CategoriaSeleccionada is null)
+                throw new InvalidOperationException("La categoria es requerida");
+
+            Model.CategoriaId = Model.CategoriaSeleccionada.Value;
+
+            if (InstructorEditado.HasValue)
+            {
+                await InstructorProxy.UpdateAsync(InstructorEditado.Value, Model);
+                InstructorEditado = null;
+            }
+            else
+                await InstructorProxy.CreateAsync(Model);
+
+            Model = new InstructorDtoRequest();
+            await Cargar();
         }
         catch (Exception ex)
         {
-            ToastService.ShowError(ex.Message);
+            await Swal.FireAsync(new SweetAlertOptions("No se pudo crear el instructor")
+            {
+                Text = ex.Message,
+                Icon = SweetAlertIcon.Error
+            });
         }
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    private async Task Editar(InstructorDtoResponse item)
+    {
+        Model = await InstructorProxy.FindByIdAsync(item.Id);
+        InstructorEditado = item.Id;
+    }
+
+    private async Task Eliminar(InstructorDtoResponse item)
+    {
+        var result = await Swal.FireAsync(new SweetAlertOptions
+        {
+            Text = "Desea eliminar el registro?",
+            Title = "Eliminar",
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true
+        });
+
+        if (result.IsConfirmed)
+        {
+            await InstructorProxy.DeleteAsync(item.Id);
+            Model = new InstructorDtoRequest();
+            await Cargar();
         }
     }
 

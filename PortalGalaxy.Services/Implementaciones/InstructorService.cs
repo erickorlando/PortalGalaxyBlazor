@@ -39,16 +39,16 @@ public class InstructorService : IInstructorService
         return response;
     }
 
-    public async Task<BaseResponseGeneric<InstructorDtoResponse>> FindByIdAsync(int id)
+    public async Task<BaseResponseGeneric<InstructorDtoRequest>> FindByIdAsync(int id)
     {
 
-        var response = new BaseResponseGeneric<InstructorDtoResponse>();
+        var response = new BaseResponseGeneric<InstructorDtoRequest>();
 
         try
         {
             var data = await _repository.FindAsync(id);
 
-            response.Data = _mapper.Map<InstructorDtoResponse>(data);
+            response.Data = _mapper.Map<InstructorDtoRequest>(data);
             response.Success = true;
         }
         catch (Exception ex)

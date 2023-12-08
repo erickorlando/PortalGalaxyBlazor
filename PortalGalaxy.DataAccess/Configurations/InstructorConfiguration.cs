@@ -12,5 +12,7 @@ public class InstructorConfiguration : IEntityTypeConfiguration<Instructor>
             .HasMaxLength(12);
 
         builder.HasIndex(p => p.NroDocumento);
+
+        builder.HasQueryFilter(p => p.Estado);
     }
 }

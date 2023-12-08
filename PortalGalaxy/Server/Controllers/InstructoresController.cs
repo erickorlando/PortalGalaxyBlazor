@@ -23,7 +23,7 @@ public class InstructoresController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
         var response = await _service.FindByIdAsync(id);
@@ -39,7 +39,7 @@ public class InstructoresController : ControllerBase
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> Put(int id, InstructorDtoRequest request)
     {
         var response = await _service.UpdateAsync(id, request);
@@ -47,7 +47,7 @@ public class InstructoresController : ControllerBase
         return response.Success ? Ok(response) : NotFound(response);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
         var response = await _service.DeleteAsync(id);

@@ -5,109 +5,7 @@
 @inject IToastService ToastService
 @inject NavigationManager NavigationManager
 
-<h2 class="text-uppercase mt-2 mb-5">Crear Taller</h2>
-
-<EditForm Model="Request" OnValidSubmit="OnGrabar">
-    <DataAnnotationsValidator />
-    <div class="row gx-5 mb-3">
-        <div class="col-7">
-            <label for="nombre" class="form-label">Nombre</label>
-            <InputText class="form-control" id="nombre" @bind-Value="Request.Nombre"></InputText>
-            <ValidationMessage For="() => Request.Nombre" />
-        </div>
-        <div class="col-5">
-            <label for="categoria" class="form-label">Categoría</label>
-            <InputSelect id="categoria" class="form-select" @bind-Value="Request.CategoriaId">
-                <option>Todos</option>
-                @foreach (var item in Categorias)
-                {
-                    <option value="@item.Id">@item.Nombre</option>
-                }
-            </InputSelect>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <label for="instructor" class="form-label">Instructor</label>
-            <div class="input-group">
-                <input type="text" class="form-control" id="instructor" @bind-value="NombreInstructor" />
-                <span class="input-group-text" style="cursor: pointer"
-                      data-bs-toggle="modal" data-bs-target="#instructorModal">
-                    <i class="bi bi-person-bounding-box"></i>
-                </span>
-            </div>
-        </div>
-        <div class="col">
-            <label for="fechaInicio" class="form-label">Fecha Inicio</label>
-            <input type="date" class="form-control" @bind-value="Request.FechaInicio" id="fechaInicio" />
-        </div>
-        <div class="col">
-            <label for="horaInicio" class="form-label">Hora Inicio</label>
-            <input type="time" class="form-control" @bind-value="Request.HoraInicio" id="horaInicio" />
-        </div>
-        <div class="col">
-            <label for="situacion" class="form-label">Situacion</label>
-            <InputSelect id="situacion" class="form-select" @bind-Value="Request.Situacion">
-                <option>Todos</option>
-                @foreach (var item in Situaciones)
-                {
-                    <option value="@item.Codigo">@item.Nombre</option>
-                }
-            </InputSelect>
-        </div>
-        <div class="row mt-3">
-            <div class="col">
-                <label for="base64portada" class="form-label">Portada</label>
-                <input type="file" id="base64portada" class="form-control" accept="image/png, image/jpeg, image/webp" />
-            </div>
-            <div class="col">
-                <label for="base64temario" class="form-label">Temario</label>
-                <input type="file" id="base64temario" class="form-control"
-                       accept="application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation
-, application/pdf" />
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-5">
-                <div class="card">
-                    <div class="card-header bg-dark">
-                        <label class="text-white">Vista Previa</label>
-                    </div>
-                    <div class="card-body text-center">
-                        @if (string.IsNullOrWhiteSpace(Request.PortadaUrl))
-                        {
-                            <img id="preview" src="assets/images/sinimagen.jpeg" alt="@Request.Nombre" />
-                        }
-                        else
-                        {
-                            <img id="preview" src="@Request.PortadaUrl" alt="@Request.Nombre" />
-                        }
-                    </div>
-                </div>
-            </div>
-            <div class="col offset-4">
-                <NavLink class="btn btn-outline-primary" href="taller/list"><i class="bi bi-x-circle me-1"></i>Cancelar</NavLink>
-            </div>
-            <div class="col">
-                <button type="submit" class="btn btn-primary"><i class="bi bi-floppy me-1"></i>Guardar</button>
-            </div>
-        </div>
-    </div>
-</EditForm>
-
-<div class="modal fade" id="instructorModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h1 class="modal-title fs-5">Buscar Instructor</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <ModalInstructor Categorias="Categorias" SeleccionInstructor="InstructorSeleccionado" />
-            </div>
-        </div>
-    </div>
-</div>
+<EditTallerComponent Categorias="Categorias" Situaciones="Situaciones" Titulo="Crear Taller" OnGuardar="OnGrabar" />
 
 <LoadingComponent IsLoading="IsLoading" />
 
@@ -117,12 +15,6 @@
 
     private ICollection<SituacionModel> Situaciones { get; set; } = new List<SituacionModel>();
 
-    public TallerDtoRequest Request { get; set; } = new();
-
-    public InstructorDtoResponse? Seleccionado { get; set; }
-
-    public string NombreInstructor { get; set; } = string.Empty;
-
     public bool IsLoading { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -131,19 +23,13 @@
         Situaciones = await JsonProxy.ListSituaciones();
     }
 
-    private void InstructorSeleccionado(InstructorDtoResponse item)
-    {
-        NombreInstructor = item.Nombres;
-        Request.InstructorId  = item.Id;
-    }
-
-    private async Task OnGrabar()
+    private async Task OnGrabar(TallerDtoRequest request)
     {
         try
         {
             IsLoading = true;
 
-            await TallerProxy.CreateAsync(Request);
+            await TallerProxy.CreateAsync(request);
 
             ToastService.ShowInfo("Se guardo correctamente el taller");
             NavigationManager.NavigateTo("taller/list");
@@ -159,4 +45,5 @@
         }
     }
 
+   
 }
