@@ -47,4 +47,8 @@
     <UpToDateCheckInput Remove="Shared\ModalInstructor.razor" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\Inscripciones\" />
+  </ItemGroup>
+
 </Project>

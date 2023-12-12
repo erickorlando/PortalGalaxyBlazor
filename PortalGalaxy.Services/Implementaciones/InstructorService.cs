@@ -46,7 +46,7 @@ public class InstructorService : IInstructorService
 
         try
         {
-            var data = await _repository.FindAsync(id);
+            var data = await _repository.FindByIdAsync(id);
 
             response.Data = _mapper.Map<InstructorDtoRequest>(data);
             response.Success = true;
@@ -86,7 +86,7 @@ public class InstructorService : IInstructorService
 
         try
         {
-            var registro = await _repository.FindAsync(id);
+            var registro = await _repository.FindByIdAsync(id);
 
             if (registro is not null)
             {

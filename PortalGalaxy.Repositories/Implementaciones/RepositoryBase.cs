@@ -89,7 +89,7 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where T
         return (collection, total);
     }
 
-    public async Task<TEntity?> FindAsync(int id)
+    public async Task<TEntity?> FindByIdAsync(int id)
     {
         return await Context.Set<TEntity>().FindAsync(id);
     }
@@ -107,7 +107,7 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where T
 
     public async Task DeleteAsync(int id)
     {
-        var registro = await FindAsync(id);
+        var registro = await FindByIdAsync(id);
         if (registro is not null)
         {
             registro.Estado = false;

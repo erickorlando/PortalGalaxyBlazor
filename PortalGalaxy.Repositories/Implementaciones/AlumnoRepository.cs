@@ -21,6 +21,13 @@ public class AlumnoRepository : RepositoryBase<Alumno>, IAlumnoRepository
             .ToListAsync();
     }
 
+    public async Task<Alumno?> FindByEmailAsync(string email)
+    {
+        return await Context.Set<Alumno>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Correo == email);
+    }
+
     public async Task Reactivar(int id)
     {
         var registro = await Context.Set<Alumno>()
