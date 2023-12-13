@@ -21,6 +21,7 @@ builder.Services.AddScoped<IJsonProxy, JsonProxy>();
 builder.Services.AddScoped<ITallerProxy, TallerProxy>();
 builder.Services.AddScoped<ICategoriaProxy, CategoriaProxy>();
 builder.Services.AddScoped<IInstructorProxy, InstructorProxy>();
+builder.Services.AddScoped<IInscripcionProxy, InscripcionProxy>();
 
 builder.Services.AddSweetAlert2();
 builder.Services.AddBlazoredToast();

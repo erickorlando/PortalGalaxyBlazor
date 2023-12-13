@@ -31,9 +31,16 @@ public class InscripcionRepository : RepositoryBase<Inscripcion>, IInscripcionRe
             filas
         });
 
-        var collection = multipleQuery.Read<InscripcionInfo>().ToList();
-        var total = multipleQuery.ReadFirst<int>();
+        try
+        {
+            var collection = multipleQuery.Read<InscripcionInfo>().ToList();
+            var total = multipleQuery.ReadFirst<int>();
 
-        return (collection, total);
+            return (collection, total);
+        }
+        catch (Exception)
+        {
+            return (new List<InscripcionInfo>(), 0);
+        }
     }
 }

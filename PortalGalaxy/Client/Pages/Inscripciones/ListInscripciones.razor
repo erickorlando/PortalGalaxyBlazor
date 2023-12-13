@@ -1,11 +1,8 @@
-﻿@page "/taller/list"
-
-@inject ITallerProxy TallerProxy
+﻿@page "/inscripciones/list"
+@inject IInscripcionProxy InscripcionProxy
 @inject ICategoriaProxy CategoriaProxy
 @inject IJsonProxy JsonProxy
 @inject IToastService ToastService
-@inject NavigationManager NavigationManager
-@inject SweetAlertService Swal
 @inject IJSRuntime JsRuntime
 @inject HttpClient HttpClient
 
@@ -14,19 +11,19 @@
 <div class="row">
     <div class="col">
         <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre:</label>
-            <InputText type="text" class="form-control" id="nombre" @bind-Value="BusquedaRequest.Nombre" />
+            <label for="instructor" class="form-label">Instructor</label>
+            <div class="input-group">
+                <input type="text" class="form-control" id="instructor" @bind-value="BusquedaRequest.Instructor" />
+                <span class="input-group-text" style="cursor: pointer"
+                      data-bs-toggle="modal" data-bs-target="#instructorModal">
+                    <i class="bi bi-person-bounding-box"></i>
+                </span>
+            </div>
         </div>
     </div>
     <div class="col-3">
-        <label for="categoria" class="form-label">Categoría</label>
-        <InputSelect id="categoria" class="form-select" @bind-Value="BusquedaRequest.CategoriaId">
-            <option>Todos</option>
-            @foreach (var item in Categorias)
-            {
-                <option value="@item.Id">@item.Nombre</option>
-            }
-        </InputSelect>
+        <label for="taller" class="form-label">Taller</label>
+        <InputText class="form-control" id="taller" @bind-Value="BusquedaRequest.Taller" />
     </div>
     <div class="col-3">
         <label for="situacion" class="form-label">Situacion</label>
@@ -39,6 +36,16 @@
         </InputSelect>
     </div>
 </div>
+<div class="row">
+    <div class="col-2">
+        <label for="fechaInicio" class="form-label">Fecha de inicio</label>
+        <InputDate class="form-control" id="fechaInicio" @bind-Value="BusquedaRequest.FechaInicio" />
+    </div>
+    <div class="col-2">
+        <label for="fechaFin" class="form-label">Fecha de fin</label>
+        <InputDate class="form-control" id="fechaFin" @bind-Value="BusquedaRequest.FechaFin" />
+    </div>
+</div>
 <div class="row mt-3 justify-content-end">
     <div class="col-auto">
         <button class="btn btn-outline-primary" @onclick="OnSearch"><i class="bi bi-search me-1"></i>Buscar</button>
@@ -46,17 +53,14 @@
     <div class="col-auto">
         <button class="btn btn-outline-primary" @onclick="OnLimpiar"><i class="bi bi-eraser-fill me-1"></i>Limpiar</button>
     </div>
-    <div class="col-auto">
-        <button class="btn btn-primary" @onclick="OnNuevo"><i class="bi bi-plus-circle me-1"></i>Nuevo</button>
-    </div>
 </div>
 
 <div class="row mt-4">
-    @if (Talleres is null)
+    @if (Inscripciones is null)
     {
         <p class="alert alert-info">Sin resultados</p>
     }
-    else if (!Talleres.Any())
+    else if (!Inscripciones.Any())
     {
         <p class="alert alert-danger">Sin datos para mostrar</p>
     }
@@ -69,11 +73,12 @@
                     <thead>
                         <tr class="table-primary">
                             <th class="text-center">#</th>
-                            <th class="text-center">Nombre</th>
+                            <th class="text-center">Taller</th>
                             <th class="text-center">Categoria</th>
                             <th class="text-center">Instructor</th>
                             <th class="text-center">Fecha</th>
                             <th class="text-center">Situacion</th>
+                            <th class="text-center">Cant.</th>
                             @if (!ExportaPdf)
                             {
                                 <th class="text-center">Acción</th>
@@ -81,39 +86,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Talleres)
+                        @foreach (var item in Inscripciones)
                         {
                             <tr>
                                 <td class="text-center">@item.Id</td>
-                                <td>@item.Nombre</td>
+                                <td>@item.Taller</td>
                                 <td class="text-center">@item.Categoria</td>
-                                <td>@item.Instructor</td>
+                                <td class="text-center">@item.Instructor</td>
                                 <td class="text-center">@item.Fecha</td>
                                 <td class="text-center">@item.Situacion</td>
-                                @if (!ExportaPdf)
-                                {
-                                    <td class="text-center">
-                                        @switch (item.Situacion)
-                                        {
-                                            case "Por Aperturar":
-                                            case "Aperturada":
-                                                <i class="bi bi-check-circle-fill" style="color: green;"></i>
-                                                break;
-                                            case "Cancelada":
-                                                <i class="bi bi-dash-circle-fill" style="color: red;"></i>
-                                                break;
-                                            default:
-                                                <i class="bi bi-check2-circle"></i>
-                                                break;
-                                        }
-                                        <button type="button" class="btn" @onclick="() => OnEditar(item.Id)">
-                                            <i class="bi bi-pencil-fill"></i>
-                                        </button>
-                                        <button type="button" class="btn" @onclick="() => OnEliminar(item.Id)">
-                                            <i class="bi bi-trash-fill"></i>
-                                        </button>
-                                    </td>
-                                }
+                                <td class="text-center cantidadview">@item.Cantidad</td>
+                                <td>
+                                    <i class="bi bi-eye"></i>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -140,21 +125,35 @@
 
 <LoadingComponent IsLoading="IsLoading" />
 
-@code
-{
+<div class="modal fade" id="instructorModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h3 class="modal-title fs-5">Buscar Instructor</h3>
+                <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <ModalInstructor Categorias="Categorias" SeleccionInstructor="InstructorSeleccionado" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
     private ICollection<CategoriaDtoResponse> Categorias { get; set; } = new List<CategoriaDtoResponse>();
 
     private ICollection<SituacionModel> Situaciones { get; set; } = new List<SituacionModel>();
 
-    private ICollection<TallerDtoResponse>? Talleres { get; set; }
+    private ICollection<InscripcionDtoResponse>? Inscripciones { get; set; }
 
     public bool IsLoading { get; set; }
 
-    public BusquedaTallerRequest BusquedaRequest { get; set; } = new() { Nombre = string.Empty, Pagina = 1, Filas = 5 };
+    public BusquedaInscripcionRequest BusquedaRequest { get; set; } = new() { Pagina = 1, Filas = 5 };
 
     public DataPager Paginador { get; set; } = default!;
 
-    public PagedResult<TallerDtoResponse> PagedResult { get; set; } = default!;
+    public PagedResult<InscripcionDtoResponse> PagedResult { get; set; } = default!;
 
     private bool ExportaPdf { get; set; }
 
@@ -163,11 +162,17 @@
         Categorias = await CategoriaProxy.ListAsync();
         Situaciones = await JsonProxy.ListSituaciones();
 
-        PagedResult = new PagedResult<TallerDtoResponse>()
+        PagedResult = new PagedResult<InscripcionDtoResponse>()
             {
                 CurrentPage = BusquedaRequest.Pagina,
                 RowPerPage = BusquedaRequest.Filas
             };
+    }
+
+    private void InstructorSeleccionado(InstructorDtoResponse item)
+    {
+        BusquedaRequest.Instructor = item.Nombres;
+        BusquedaRequest.InstructorId = item.Id;
     }
 
     private async Task OnSearch()
@@ -176,13 +181,13 @@
         {
             IsLoading = true;
 
-            var response = await TallerProxy.ListAsync(BusquedaRequest);
+            var response = await InscripcionProxy.ListAsync(BusquedaRequest);
 
-            Talleres = response.Data;
-            if (Talleres is not null)
+            Inscripciones = response.Data;
+            if (Inscripciones is not null)
             {
-                PagedResult.Results = Talleres;
-                PagedResult.RowCount = Talleres.Count;
+                PagedResult.Results = Inscripciones;
+                PagedResult.RowCount = Inscripciones.Count;
                 PagedResult.TotalPages = response.TotalPages;
             }
         }
@@ -198,42 +203,7 @@
 
     private void OnLimpiar()
     {
-        BusquedaRequest = new() { Pagina = 1, Filas = 5 };
-    }
-
-    private void OnNuevo()
-    {
-        NavigationManager.NavigateTo("/taller/nuevo");
-    }
-
-    private void OnEditar(int id)
-    {
-        NavigationManager.NavigateTo($"/taller/editar/{id}");
-    }
-
-    private async Task OnEliminar(int id)
-    {
-        try
-        {
-            var result = await Swal.FireAsync(new SweetAlertOptions
-                {
-                    Text = "Desea eliminar el registro?",
-                    Title = "Eliminar",
-                    Icon = SweetAlertIcon.Question,
-                    ShowCancelButton = true
-                });
-
-            if (result.IsConfirmed)
-            {
-                await TallerProxy.DeleteAsync(id);
-
-                await OnSearch();
-            }
-        }
-        catch (Exception ex)
-        {
-            ToastService.ShowError(ex.Message);
-        }
+        BusquedaRequest = new() { Pagina = 1, Filas = 5};
     }
 
     private async Task PaginaCambiada()
@@ -254,7 +224,7 @@
 
     private async Task OnExportarExcel()
     {
-        if (Talleres is null) return;
+        if (Inscripciones is null) return;
 
         try
         {
@@ -263,9 +233,9 @@
             var plantilla = await HttpClient.GetStreamAsync("assets/xls/TallerTemplate.xlsx");
 
             var excel = new PlantillaXls();
-            var xlsStream = excel.GenerarPlantilla(plantilla, Talleres);
+            var xlsStream = excel.GenerarPlantilla(plantilla, Inscripciones);
 
-            await JsRuntime.InvokeVoidAsync("BlazorDownloadFile", "Talleres.xlsx", xlsStream);
+            await JsRuntime.InvokeVoidAsync("BlazorDownloadFile", "Inscripciones.xlsx", xlsStream);
         }
         catch (Exception ex)
         {
@@ -280,7 +250,7 @@
 
     private async Task OnExportarPdf()
     {
-        if (Talleres is null) return;
+        if (Inscripciones is null) return;
 
         try
         {
@@ -290,7 +260,7 @@
 
             var contenidoTabla = await JsRuntime.InvokeAsync<string>("getTableHtml");
             // Generar y descargar el PDF
-            await module.InvokeVoidAsync("generateAndDownloadPdf", $"<h1>Listado de Talleres</h1><hr />{contenidoTabla}", "Talleres.pdf");
+            await module.InvokeVoidAsync("generateAndDownloadPdf", $"<h1>Listado de Inscripciones</h1><hr />{contenidoTabla}", "Inscripciones.pdf");
 
             ExportaPdf = false;
         }

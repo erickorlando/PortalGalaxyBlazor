@@ -41,4 +41,5 @@ public class JsonProxy : IJsonProxy
 
         return situaciones;
     }
+
 }

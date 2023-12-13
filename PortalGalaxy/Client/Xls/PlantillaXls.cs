@@ -1,15 +1,14 @@
 ﻿using ClosedXML.Report;
-using PortalGalaxy.Shared.Response;
 
 namespace PortalGalaxy.Client.Xls;
 
 public class PlantillaXls
 {
-    public byte[] GenerarPlantillaTaller(Stream plantilla, ICollection<TallerDtoResponse> data)
+    public byte[] GenerarPlantilla(Stream plantilla, object data, string variable = "Talleres")
     {
         var template = new XLTemplate(plantilla);
         
-        template.AddVariable("Talleres", data);
+        template.AddVariable(variable, data);
         template.Generate();
         
         using var ms = new MemoryStream();
