@@ -21,7 +21,7 @@ public interface IRepositoryBase<TEntity> where TEntity : EntityBase
         int pagina = 1,
         int filas = 5);
 
-    Task<TEntity?> FindAsync(int id);
+    Task<TEntity?> FindByIdAsync(int id);
 
     Task AddAsync(TEntity entity);
 

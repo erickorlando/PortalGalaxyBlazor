@@ -50,7 +50,7 @@ public class AlumnoService : IAlumnoService
 
         try
         {
-            var data = await _repository.FindAsync(id);
+            var data = await _repository.FindByIdAsync(id);
 
             response.Data = _mapper.Map<AlumnoDtoResponse>(data);
             response.Success = true;
@@ -93,7 +93,7 @@ public class AlumnoService : IAlumnoService
 
         try
         {
-            var registro = await _repository.FindAsync(id);
+            var registro = await _repository.FindByIdAsync(id);
 
             if (registro is not null)
             {

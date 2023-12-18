@@ -47,7 +47,7 @@ public class CategoriaService : ICategoriaService
 
         try
         {
-            var categoria = await _categoriaRepository.FindAsync(id);
+            var categoria = await _categoriaRepository.FindByIdAsync(id);
 
             response.Data = _mapper.Map<CategoriaDtoRequest>(categoria);
             response.Success = true;
@@ -86,7 +86,7 @@ public class CategoriaService : ICategoriaService
 
         try
         {
-            var entity = await _categoriaRepository.FindAsync(id);
+            var entity = await _categoriaRepository.FindByIdAsync(id);
             if (entity is null)
             {
                 response.ErrorMessage = "No se encontro la categoria";

@@ -40,11 +40,20 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Pages\Auth\Login.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Inscripciones\ListInscripciones.razor" />
     <_ContentIncludedByDefault Remove="Shared\ModalInstructor.razor" />
   </ItemGroup>
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Shared\ModalInstructor.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Shared\Inscripciones\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Inscripciones\ListInscripciones.razor" />
   </ItemGroup>
 
 </Project>

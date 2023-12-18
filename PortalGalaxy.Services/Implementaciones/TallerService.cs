@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using PortalGalaxy.Entities;
 using PortalGalaxy.Repositories.Interfaces;
 using PortalGalaxy.Services.Interfaces;
+using PortalGalaxy.Services.Utils;
 using PortalGalaxy.Shared.Request;
 using PortalGalaxy.Shared.Response;
 
@@ -49,7 +50,7 @@ public class TallerService : ITallerService
         var response = new BaseResponseGeneric<TallerDtoRequest>();
         try
         {
-            var entity = await _repository.FindAsync(id);
+            var entity = await _repository.FindByIdAsync(id);
             if (entity == null)
             {
                 response.ErrorMessage = "No se encontró el Taller";
@@ -72,7 +73,7 @@ public class TallerService : ITallerService
         var response = new BaseResponse();
         try
         {
-            var entity = await _repository.FindAsync(id);
+            var entity = await _repository.FindByIdAsync(id);
             if (entity == null)
             {
                 response.ErrorMessage = "No se encontró el Taller";
@@ -107,7 +108,7 @@ public class TallerService : ITallerService
         var response = new BaseResponse();
         try
         {
-            var entity = await _repository.FindAsync(id);
+            var entity = await _repository.FindByIdAsync(id);
             if (entity == null)
             {
                 response.ErrorMessage = "No se encontró el Taller";
@@ -133,11 +134,7 @@ public class TallerService : ITallerService
             var tupla = await _repository.ListarTalleresAsync(request.Nombre, request.CategoriaId, request.Situacion, request.Pagina, request.Filas);
 
             response.Data = _mapper.Map<ICollection<TallerDtoResponse>>(tupla.Collection);
-            response.TotalPages = tupla.Total / request.Filas;
-            if (tupla.Total % request.Filas > 0)
-            {
-                response.TotalPages++;
-            }
+            response.TotalPages = Helper.GetTotalPages(tupla.Total, request.Filas);
 
             response.Success = true;
         }
