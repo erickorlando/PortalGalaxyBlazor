@@ -23,6 +23,14 @@ public class TalleresController : ControllerBase
         return response.Success ? Ok(response) : BadRequest(response);
     }
     
+    [HttpGet("inscritos")]
+    public async Task<IActionResult> Get([FromQuery]BusquedaInscritosPorTallerRequest request)
+    {
+        var response = await _service.ListAsync(request);
+
+        return response.Success ? Ok(response) : BadRequest(response);
+    }
+    
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {

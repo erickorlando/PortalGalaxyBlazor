@@ -1,5 +1,5 @@
 ﻿#imagen-de-fondo {
-    background-image: url('/assets/images/fondo_esp_cert.png');
+    background-image: url('assets/images/fondo_esp_cert.png');
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;

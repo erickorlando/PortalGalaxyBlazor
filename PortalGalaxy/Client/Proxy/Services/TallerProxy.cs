@@ -25,4 +25,17 @@ public class TallerProxy : CrudRestHelperBase<TallerDtoRequest, TallerDtoRespons
 
         return await Task.FromResult(new PaginationResponse<TallerDtoResponse>());
     }
+
+    public async Task<PaginationResponse<InscritosPorTallerDtoResponse>> ListAsync(BusquedaInscritosPorTallerRequest request)
+    {
+        var response = await HttpClient.GetFromJsonAsync<PaginationResponse<InscritosPorTallerDtoResponse>>(
+            $"{BaseUrl}/inscritos?instructorId={request.InstructorId}&taller={request.Taller}&situacion={request.Situacion}&fechaInicio={request.FechaInicio}&fechaFin={request.FechaFin}&pagina={request.Pagina}&filas={request.Filas}");
+
+        if (response is { Success: false })
+        {
+            throw new InvalidOperationException(response.ErrorMessage);
+        }
+
+        return response!;
+    }
 }

@@ -13,8 +13,12 @@
                     <li class="nav-item">
                         <NavLink href="categorias/list" class="nav-link link-dark"><i class="bi bi-archive me-1"></i>Categorias</NavLink>
                     </li>
-                    <li class="nav-item">
-                        <NavLink href="taller/list" class="nav-link link-dark"><i class="bi bi-tools me-1"></i>Talleres</NavLink>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle link-dark" href="#" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-tools me-1"></i>Talleres</a>
+                        <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
+                            <li><NavLink href="taller/list" class="dropdown-item"><i class="bi bi-tools me-1"></i>Listado de Talleres</NavLink></li>
+                            <li><NavLink href="taller/inscritos/list" class="dropdown-item"><i class="bi bi-person me-1"></i>Inscritos por Taller</NavLink></li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <NavLink href="inscripciones/list" class="nav-link link-dark"><i class="bi bi-people me-1"></i>Inscripciones</NavLink>

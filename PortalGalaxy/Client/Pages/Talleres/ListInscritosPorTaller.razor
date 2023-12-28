@@ -1,5 +1,6 @@
-﻿@page "/inscripciones/list"
-@inject IInscripcionProxy InscripcionProxy
+﻿@page "/taller/inscritos/list"
+
+@inject ITallerProxy TallerProxy
 @inject ICategoriaProxy CategoriaProxy
 @inject IJsonProxy JsonProxy
 @inject IToastService ToastService
@@ -145,15 +146,15 @@
 
     private ICollection<SituacionModel> Situaciones { get; set; } = new List<SituacionModel>();
 
-    private ICollection<InscripcionDtoResponse>? Inscripciones { get; set; }
+    private ICollection<InscritosPorTallerDtoResponse>? Inscripciones { get; set; }
 
     public bool IsLoading { get; set; }
 
-    public BusquedaInscripcionRequest BusquedaRequest { get; set; } = new() { Pagina = 1, Filas = 5 };
+    public BusquedaInscritosPorTallerRequest BusquedaRequest { get; set; } = new() { Pagina = 1, Filas = 5 };
 
     public DataPager Paginador { get; set; } = default!;
 
-    public PagedResult<InscripcionDtoResponse> PagedResult { get; set; } = default!;
+    public PagedResult<InscritosPorTallerDtoResponse> PagedResult { get; set; } = default!;
 
     private bool ExportaPdf { get; set; }
 
@@ -162,7 +163,7 @@
         Categorias = await CategoriaProxy.ListAsync();
         Situaciones = await JsonProxy.ListSituaciones();
 
-        PagedResult = new PagedResult<InscripcionDtoResponse>()
+        PagedResult = new PagedResult<InscritosPorTallerDtoResponse>()
             {
                 CurrentPage = BusquedaRequest.Pagina,
                 RowPerPage = BusquedaRequest.Filas
@@ -181,7 +182,7 @@
         {
             IsLoading = true;
 
-            var response = await InscripcionProxy.ListAsync(BusquedaRequest);
+            var response = await TallerProxy.ListAsync(BusquedaRequest);
 
             Inscripciones = response.Data;
             if (Inscripciones is not null)
@@ -235,7 +236,7 @@
             var excel = new PlantillaXls();
             var xlsStream = excel.GenerarPlantilla(plantilla, Inscripciones);
 
-            await JsRuntime.InvokeVoidAsync("BlazorDownloadFile", "Inscripciones.xlsx", xlsStream);
+            await JsRuntime.InvokeVoidAsync("BlazorDownloadFile", "InscritosPorTaller.xlsx", xlsStream);
         }
         catch (Exception ex)
         {
@@ -260,7 +261,7 @@
 
             var contenidoTabla = await JsRuntime.InvokeAsync<string>("getTableHtml");
             // Generar y descargar el PDF
-            await module.InvokeVoidAsync("generateAndDownloadPdf", $"<h1>Listado de Inscripciones</h1><hr />{contenidoTabla}", "Inscripciones.pdf");
+            await module.InvokeVoidAsync("generateAndDownloadPdf", $"<h1>Listado de Talleres</h1><hr />{contenidoTabla}", "InscritosPorTaller.pdf");
 
             ExportaPdf = false;
         }

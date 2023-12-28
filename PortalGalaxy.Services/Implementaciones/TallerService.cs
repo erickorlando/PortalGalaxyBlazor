@@ -24,6 +24,29 @@ public class TallerService : ITallerService
         _fileUploader = fileUploader;
     }
 
+    public async Task<PaginationResponse<InscritosPorTallerDtoResponse>> ListAsync(BusquedaInscritosPorTallerRequest request)
+    {
+        var response = new PaginationResponse<InscritosPorTallerDtoResponse>();
+
+        try
+        {
+            // Codigo
+            var tupla = await _repository.ListAsync(request.InstructorId, request.Taller, request.Situacion,
+                request.FechaInicio, request.FechaFin, request.Pagina, request.Filas);
+
+            response.Data = _mapper.Map<ICollection<InscritosPorTallerDtoResponse>>(tupla.Colecction);
+            response.TotalPages = Helper.GetTotalPages(tupla.Total, request.Filas);
+            response.Success = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = "Error al listar los inscritos por taller";
+            _logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+        }
+
+        return response;
+    }
+
     public async Task<BaseResponse> AddAsync(TallerDtoRequest request)
     {
         var response = new BaseResponse();

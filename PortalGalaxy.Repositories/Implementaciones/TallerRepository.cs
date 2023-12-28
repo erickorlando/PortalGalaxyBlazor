@@ -1,4 +1,7 @@
-﻿using PortalGalaxy.DataAccess;
+﻿using System.Data;
+using Dapper;
+using Microsoft.EntityFrameworkCore;
+using PortalGalaxy.DataAccess;
 using PortalGalaxy.Entities;
 using PortalGalaxy.Entities.Infos;
 using PortalGalaxy.Repositories.Interfaces;
@@ -32,5 +35,36 @@ public class TallerRepository : RepositoryBase<Taller>, ITallerRepository
                                     filas: filas);
 
         return tupla;
+    }
+
+    public async Task<(ICollection<InscritosPorTallerInfo> Colecction, int Total)> ListAsync(int? instructorId, string? taller, int? situacion, DateTime? fechaInicio, DateTime? fechaFin, int pagina,
+        int filas)
+    {
+        await using var multipleQuery = await Context.Database.GetDbConnection()
+            .QueryMultipleAsync(
+                sql: "uspListarInscripciones", 
+                commandType: CommandType.StoredProcedure, 
+                param: new
+                {
+                    instructorId,
+                    taller,
+                    situacion,
+                    fechaInicio,
+                    fechaFin,
+                    pagina = pagina - 1,
+                    filas
+                });
+
+        try
+        {
+            var collection = multipleQuery.Read<InscritosPorTallerInfo>().ToList();
+            var total = multipleQuery.ReadFirst<int>();
+
+            return (collection, total);
+        }
+        catch (Exception)
+        {
+            return (new List<InscritosPorTallerInfo>(), 0);
+        }
     }
 }
