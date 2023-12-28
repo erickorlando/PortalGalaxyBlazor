@@ -1,7 +1,4 @@
-﻿using System.Data;
-using Dapper;
-using Microsoft.EntityFrameworkCore;
-using PortalGalaxy.DataAccess;
+﻿using PortalGalaxy.DataAccess;
 using PortalGalaxy.Entities;
 using PortalGalaxy.Entities.Infos;
 using PortalGalaxy.Repositories.Interfaces;
@@ -14,33 +11,28 @@ public class InscripcionRepository : RepositoryBase<Inscripcion>, IInscripcionRe
     {
     }
 
-    public async Task<(ICollection<InscripcionInfo> Colecction, int Total)> ListAsync(int? instructorId, string? taller, int? situacion, DateTime? fechaInicio, DateTime? fechaFin, int pagina, int filas)
+    public async Task<(ICollection<InscripcionInfo> Colecction, int Total)> ListAsync(string? inscrito, string? taller, int? situacion, DateTime? fechaInicio, DateTime? fechaFin, int pagina, int filas)
     {
-        await using var multipleQuery = await Context.Database.GetDbConnection()
-            .QueryMultipleAsync(
-            sql: "uspListarInscripciones", 
-            commandType: CommandType.StoredProcedure, 
-            param: new
-        {
-            instructorId,
-            taller,
-            situacion,
-            fechaInicio,
-            fechaFin,
-            pagina = pagina - 1,
-            filas
-        });
+        var tupla = await ListAsync(predicado: p => p.Alumno.NombreCompleto.Contains(inscrito ?? string.Empty)
+                                                    && (p.Taller.Nombre.Contains(taller ?? string.Empty))
+                                                    && (situacion == null ||
+                                                        p.Situacion == (SituacionInscripcion)situacion)
+                            && (fechaInicio == null || fechaInicio <= p.FechaCreacion && fechaFin >= p.FechaCreacion),
+            selector: p => new InscripcionInfo
+            {
+                Id = p.Id,
+                Nombre = p.Alumno.NombreCompleto,
+                Taller = p.Taller.Nombre,
+                Fecha = p.FechaCreacion.ToString("dd/MM/yyyy"),
+                Situacion = p.Situacion.ToString().Replace('_',' ')
+            }, 
+            orderBy: x => x.Id,
+            relaciones: "Alumno,Taller",
+            pagina: pagina,
+            filas: filas);
 
-        try
-        {
-            var collection = multipleQuery.Read<InscripcionInfo>().ToList();
-            var total = multipleQuery.ReadFirst<int>();
-
-            return (collection, total);
-        }
-        catch (Exception)
-        {
-            return (new List<InscripcionInfo>(), 0);
-        }
+        return tupla;
+        
+        
     }
 }

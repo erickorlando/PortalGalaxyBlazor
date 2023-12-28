@@ -19,8 +19,6 @@ public class TallerProfile : Profile
         CreateMap<TallerDtoRequest, Taller>()
             .ReverseMap();
 
-        CreateMap<InscripcionInfo, InscripcionDtoResponse>();
-
         CreateMap<InscritosPorTallerInfo, InscritosPorTallerDtoResponse>();
     }
 }

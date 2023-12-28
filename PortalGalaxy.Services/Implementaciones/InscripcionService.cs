@@ -32,7 +32,7 @@ public class InscripcionService : IInscripcionService
         try
         {
             // Codigo
-            var tupla = await _repository.ListAsync(request.InstructorId, request.Taller, request.Situacion,
+            var tupla = await _repository.ListAsync(request.Inscrito, request.Taller, request.Situacion,
                 request.FechaInicio, request.FechaFin, request.Pagina, request.Filas);
 
             response.Data = _mapper.Map<ICollection<InscripcionDtoResponse>>(tupla.Colecction);

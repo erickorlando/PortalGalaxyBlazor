@@ -73,6 +73,7 @@ builder.Services.AddAutoMapper(config =>
     config.AddProfile<CategoriaProfile>();
     config.AddProfile<InstructorProfile>();
     config.AddProfile<TallerProfile>();
+    config.AddProfile<InscripcionProfile>();
 });
 
 builder.Services.AddAuthentication(x =>
@@ -123,12 +124,12 @@ app.UseAuthorization();
 
 app.Use(async delegate(HttpContext context, Func<Task> next)
 {
-    var authenticated = context.User?.Identity?.IsAuthenticated ?? false;
+    var authenticated = context.User.Identity?.IsAuthenticated ?? false;
     Debug.WriteLine("Usuario autenticado {0}", authenticated);
 
     if (authenticated)
     {
-        var vencimiento = context.User!.Claims.First(p => p.Type == ClaimTypes.Expiration).Value!;
+        var vencimiento = context.User.Claims.First(p => p.Type == ClaimTypes.Expiration).Value;
         Debug.WriteLine($"El token vence a las {vencimiento}");
     }
 

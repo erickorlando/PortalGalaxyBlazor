@@ -15,7 +15,7 @@ public class InscripcionProxy : CrudRestHelperBase<InscripcionDtoRequest, Inscri
     public async Task<PaginationResponse<InscripcionDtoResponse>> ListAsync(BusquedaInscripcionRequest request)
     {
         var response = await HttpClient.GetFromJsonAsync<PaginationResponse<InscripcionDtoResponse>>(
-            $"{BaseUrl}?instructorId={request.InstructorId}&taller={request.Taller}&situacion={request.Situacion}&fechaInicio={request.FechaInicio}&fechaFin={request.FechaFin}&pagina={request.Pagina}&filas={request.Filas}");
+            $"{BaseUrl}?inscrito={request.Inscrito}&taller={request.Taller}&situacion={request.Situacion}&fechaInicio={request.FechaInicio}&fechaFin={request.FechaFin}&pagina={request.Pagina}&filas={request.Filas}");
 
         if (response is { Success: false })
         {

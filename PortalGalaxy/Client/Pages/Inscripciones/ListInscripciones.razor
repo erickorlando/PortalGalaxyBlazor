@@ -1,29 +1,22 @@
 ﻿@page "/inscripciones/list"
 @inject IInscripcionProxy InscripcionProxy
-@inject ICategoriaProxy CategoriaProxy
 @inject IJsonProxy JsonProxy
 @inject IToastService ToastService
 @inject IJSRuntime JsRuntime
 @inject HttpClient HttpClient
 
-<h2 class="text-uppercase mb-5">Listado de Talleres</h2>
+<h2 class="text-uppercase mb-5">Listado de Inscritos</h2>
 
 <div class="row">
     <div class="col">
         <div class="mb-3">
-            <label for="instructor" class="form-label">Instructor</label>
-            <div class="input-group">
-                <input type="text" class="form-control" id="instructor" @bind-value="BusquedaRequest.Instructor" />
-                <span class="input-group-text" style="cursor: pointer"
-                      data-bs-toggle="modal" data-bs-target="#instructorModal">
-                    <i class="bi bi-person-bounding-box"></i>
-                </span>
-            </div>
+            <label for="inscrito" class="form-label">Inscrito</label>
+            <input type="text" class="form-control" id="inscrito" @bind-value="BusquedaRequest.Inscrito"/>
         </div>
     </div>
     <div class="col-3">
         <label for="taller" class="form-label">Taller</label>
-        <InputText class="form-control" id="taller" @bind-Value="BusquedaRequest.Taller" />
+        <InputText class="form-control" id="taller" @bind-Value="BusquedaRequest.Taller"/>
     </div>
     <div class="col-3">
         <label for="situacion" class="form-label">Situacion</label>
@@ -39,11 +32,11 @@
 <div class="row">
     <div class="col-2">
         <label for="fechaInicio" class="form-label">Fecha de inicio</label>
-        <InputDate class="form-control" id="fechaInicio" @bind-Value="BusquedaRequest.FechaInicio" />
+        <InputDate class="form-control" id="fechaInicio" @bind-Value="BusquedaRequest.FechaInicio"/>
     </div>
     <div class="col-2">
         <label for="fechaFin" class="form-label">Fecha de fin</label>
-        <InputDate class="form-control" id="fechaFin" @bind-Value="BusquedaRequest.FechaFin" />
+        <InputDate class="form-control" id="fechaFin" @bind-Value="BusquedaRequest.FechaFin"/>
     </div>
 </div>
 <div class="row mt-3 justify-content-end">
@@ -52,6 +45,9 @@
     </div>
     <div class="col-auto">
         <button class="btn btn-outline-primary" @onclick="OnLimpiar"><i class="bi bi-eraser-fill me-1"></i>Limpiar</button>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary" @onclick="OnLimpiar"><i class="bi bi-plus-circle me-1"></i>Inscribir</button>
     </div>
 </div>
 
@@ -71,36 +67,32 @@
             <div id="tablaConDatos">
                 <table class="table table-bordered">
                     <thead>
-                        <tr class="table-primary">
-                            <th class="text-center">#</th>
-                            <th class="text-center">Taller</th>
-                            <th class="text-center">Categoria</th>
-                            <th class="text-center">Instructor</th>
-                            <th class="text-center">Fecha</th>
-                            <th class="text-center">Situacion</th>
-                            <th class="text-center">Cant.</th>
-                            @if (!ExportaPdf)
-                            {
-                                <th class="text-center">Acción</th>
-                            }
-                        </tr>
+                    <tr class="table-primary">
+                        <th class="text-center">#</th>
+                        <th class="text-center">Nombre</th>
+                        <th class="text-center">Taller</th>
+                        <th class="text-center">Inscripción</th>
+                        <th class="text-center">Situacion</th>
+                        @if (!ExportaPdf)
+                        {
+                            <th class="text-center">Acciones</th>
+                        }
+                    </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Inscripciones)
-                        {
-                            <tr>
-                                <td class="text-center">@item.Id</td>
-                                <td>@item.Taller</td>
-                                <td class="text-center">@item.Categoria</td>
-                                <td class="text-center">@item.Instructor</td>
-                                <td class="text-center">@item.Fecha</td>
-                                <td class="text-center">@item.Situacion</td>
-                                <td class="text-center"> <span class="cantidadview">@item.Cantidad</span></td>
-                                <td class="text-center">
-                                    <i class="bi bi-eye"></i>
-                                </td>
-                            </tr>
-                        }
+                    @foreach (var item in Inscripciones)
+                    {
+                        <tr>
+                            <td class="text-center">@item.Id</td>
+                            <td>@item.Nombre</td>
+                            <td class="text-center">@item.Taller</td>
+                            <td class="text-center">@item.Fecha</td>
+                            <td class="text-center">@item.Situacion</td>
+                            <td class="text-center">
+                                <i class="bi bi-eye"></i>
+                            </td>
+                        </tr>
+                    }
                     </tbody>
                 </table>
             </div>
@@ -123,7 +115,7 @@
 <DataPager @ref="Paginador" Result="PagedResult" OnPageChanged="PaginaCambiada" OnPageSizeChanged="FilasPorPagina"></DataPager>
 
 
-<LoadingComponent IsLoading="IsLoading" />
+<LoadingComponent IsLoading="IsLoading"/>
 
 <div class="modal fade" id="instructorModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -133,15 +125,13 @@
                 <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <ModalInstructor Categorias="Categorias" SeleccionInstructor="InstructorSeleccionado" />
+                @* <ModalInstructor Categorias="Categorias" SeleccionInstructor="InstructorSeleccionado" /> *@
             </div>
         </div>
     </div>
 </div>
 
 @code {
-
-    private ICollection<CategoriaDtoResponse> Categorias { get; set; } = new List<CategoriaDtoResponse>();
 
     private ICollection<SituacionModel> Situaciones { get; set; } = new List<SituacionModel>();
 
@@ -159,20 +149,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Categorias = await CategoriaProxy.ListAsync();
         Situaciones = await JsonProxy.ListSituaciones();
 
         PagedResult = new PagedResult<InscripcionDtoResponse>()
-            {
-                CurrentPage = BusquedaRequest.Pagina,
-                RowPerPage = BusquedaRequest.Filas
-            };
-    }
-
-    private void InstructorSeleccionado(InstructorDtoResponse item)
-    {
-        BusquedaRequest.Instructor = item.Nombres;
-        BusquedaRequest.InstructorId = item.Id;
+        {
+            CurrentPage = BusquedaRequest.Pagina,
+            RowPerPage = BusquedaRequest.Filas
+        };
     }
 
     private async Task OnSearch()
@@ -203,7 +186,7 @@
 
     private void OnLimpiar()
     {
-        BusquedaRequest = new() { Pagina = 1, Filas = 5};
+        BusquedaRequest = new() { Pagina = 1, Filas = 5 };
     }
 
     private async Task PaginaCambiada()
@@ -230,12 +213,12 @@
         {
             IsLoading = true;
 
-            var plantilla = await HttpClient.GetStreamAsync("assets/xls/TallerTemplate.xlsx");
+            var plantilla = await HttpClient.GetStreamAsync("assets/xls/InscritosTemplate.xlsx");
 
             var excel = new PlantillaXls();
             var xlsStream = excel.GenerarPlantilla(plantilla, Inscripciones);
 
-            await JsRuntime.InvokeVoidAsync("BlazorDownloadFile", "Inscripciones.xlsx", xlsStream);
+            await JsRuntime.InvokeVoidAsync("BlazorDownloadFile", "Inscritos.xlsx", xlsStream);
         }
         catch (Exception ex)
         {
@@ -260,7 +243,7 @@
 
             var contenidoTabla = await JsRuntime.InvokeAsync<string>("getTableHtml");
             // Generar y descargar el PDF
-            await module.InvokeVoidAsync("generateAndDownloadPdf", $"<h1>Listado de Inscripciones</h1><hr />{contenidoTabla}", "Inscripciones.pdf");
+            await module.InvokeVoidAsync("generateAndDownloadPdf", $"<h1>Listado de Inscritos</h1><hr />{contenidoTabla}", "Inscritos.pdf");
 
             ExportaPdf = false;
         }
@@ -269,4 +252,5 @@
             ToastService.ShowError(ex.Message);
         }
     }
+
 }
