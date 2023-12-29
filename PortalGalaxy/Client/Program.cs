@@ -23,6 +23,7 @@ builder.Services.AddScoped<ICategoriaProxy, CategoriaProxy>();
 builder.Services.AddScoped<IInstructorProxy, InstructorProxy>();
 builder.Services.AddScoped<IInscripcionProxy, InscripcionProxy>();
 builder.Services.AddScoped<IAlumnoProxy, AlumnoProxy>();
+builder.Services.AddScoped<IHomeProxy, HomeProxy>();
 
 builder.Services.AddSweetAlert2();
 builder.Services.AddBlazoredToast();

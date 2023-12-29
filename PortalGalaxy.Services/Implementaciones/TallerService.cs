@@ -72,6 +72,28 @@ public class TallerService : ITallerService
         return response;
     }
 
+    public async Task<PaginationResponse<TallerHomeDtoResponse>> ListarTalleresHomeAsync(BusquedaTallerHomeRequest request)
+    {
+        var response = new PaginationResponse<TallerHomeDtoResponse>();
+
+        try
+        {
+            var tupla = await _repository.ListarTalleresHomeAsync(request.Nombre, request.InstructorId,
+                request.FechaInicio, request.FechaFin, request.Pagina, request.Filas);
+
+            response.Data = _mapper.Map<ICollection<TallerHomeDtoResponse>>(tupla.Collection);
+            response.TotalPages = Helper.GetTotalPages(tupla.Total, request.Filas);
+            response.Success = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = "Error al listar los talleres";
+            _logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+        }
+
+        return response;
+    }
+
     public async Task<BaseResponse> AddAsync(TallerDtoRequest request)
     {
         var response = new BaseResponse();

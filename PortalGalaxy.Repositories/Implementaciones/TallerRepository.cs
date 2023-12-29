@@ -67,4 +67,29 @@ public class TallerRepository : RepositoryBase<Taller>, ITallerRepository
             return (new List<InscritosPorTallerInfo>(), 0);
         }
     }
+
+    public async Task<(ICollection<TallerHomeInfo> Collection, int Total)> ListarTalleresHomeAsync(string? nombre, int? instructorId, DateTime? fechaInicio, DateTime? fechaFin, int pagina, int filas)
+    {
+        var tupla = await ListAsync(predicado: p => p.Nombre.Contains(nombre ?? string.Empty) 
+                                                    && (instructorId == null || p.InstructorId == instructorId)
+                                                    && (fechaInicio == null || fechaInicio <= p.FechaInicio)
+                                                    && (fechaFin == null || fechaFin >= p.FechaInicio),
+                                    selector: p => new TallerHomeInfo
+                                    {
+                                        Id = p.Id,
+                                        Nombre = p.Nombre,
+                                        FechaInicio = p.FechaInicio,
+                                        HoraInicio = p.HoraInicio,
+                                        PortadaUrl = p.PortadaUrl,
+                                        TemarioUrl = p.TemarioUrl,
+                                        Descripcion = p.Descripcion,
+                                        Instructor = p.Instructor.Nombres
+                                    }, 
+                                    orderBy: x => x.Id,
+                                    relaciones: "Instructor",
+                                    pagina: pagina,
+                                    filas: filas);
+        
+        return tupla;
+    }
 }

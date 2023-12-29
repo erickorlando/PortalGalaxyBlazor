@@ -9,4 +9,7 @@ public interface ITallerRepository : IRepositoryBase<Taller>
         int filas);
     
     Task<(ICollection<InscritosPorTallerInfo> Colecction, int Total)> ListAsync(int? instructorId, string? taller, int? situacion, DateTime? fechaInicio, DateTime? fechaFin, int pagina, int filas);
+    
+    Task<(ICollection<TallerHomeInfo> Collection, int Total)> ListarTalleresHomeAsync(string? nombre, int? instructorId,
+        DateTime? fechaInicio, DateTime? fechaFin, int pagina, int filas);
 }

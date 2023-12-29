@@ -1,0 +1,40 @@
+﻿@page "/CatalogoTalleres"
+
+@inject IHomeProxy HomeProxy
+@inject IToastService ToastService
+
+<h3>CatalogoTalleres</h3>
+
+@code {
+
+    public bool IsLoading { get; set; }
+    public DataPager Paginador { get; set; } = new DataPager();
+    public BusquedaTallerHomeRequest BusquedaRequest { get; set; } = new BusquedaTallerHomeRequest();
+    public ICollection<TallerHomeDtoResponse>? Talleres { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            var response = await HomeProxy.ListarTalleresHomeAsync(BusquedaRequest);
+            Paginador.Result = new PaginationData
+            {
+                TotalPages = response.TotalPages,
+                RowCount = response.Data?.Count ?? 0,
+                RowPerPage = 10
+            };
+        
+            Talleres = response.Data;
+        }
+        catch(Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+}
