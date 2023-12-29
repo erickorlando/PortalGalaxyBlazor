@@ -6,6 +6,8 @@ namespace PortalGalaxy.Services.Interfaces;
 public interface IAlumnoService
 {
     Task<BaseResponseGeneric<ICollection<AlumnoDtoResponse>>> ListAsync(string? filtro, string? nroDocumento);
+    
+    Task<BaseResponseGeneric<ICollection<AlumnoSimpleDtoResponse>>> ListSimpleAsync(string? filtro, string? nroDocumento);
 
     Task<BaseResponseGeneric<AlumnoDtoResponse>> FindByIdAsync(int id);
 

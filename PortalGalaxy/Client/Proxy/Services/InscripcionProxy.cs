@@ -14,8 +14,13 @@ public class InscripcionProxy : CrudRestHelperBase<InscripcionDtoRequest, Inscri
 
     public async Task<PaginationResponse<InscripcionDtoResponse>> ListAsync(BusquedaInscripcionRequest request)
     {
+        var fechaInicio = request.FechaInicio?.ToString("yyyy-MM-dd") ?? string.Empty;
+        // Aumentamos un dia más a la fecha fin para que tome la fecha completa
+        request.FechaFin = request.FechaFin?.AddDays(1);
+        var fechaFin = request.FechaFin?.ToString("yyyy-MM-dd") ?? string.Empty;
+        
         var response = await HttpClient.GetFromJsonAsync<PaginationResponse<InscripcionDtoResponse>>(
-            $"{BaseUrl}?inscrito={request.Inscrito}&taller={request.Taller}&situacion={request.Situacion}&fechaInicio={request.FechaInicio}&fechaFin={request.FechaFin}&pagina={request.Pagina}&filas={request.Filas}");
+            $"{BaseUrl}?inscrito={request.Inscrito}&taller={request.Taller}&situacion={request.Situacion}&fechaInicio={fechaInicio}&fechaFin={fechaFin}&pagina={request.Pagina}&filas={request.Filas}");
 
         if (response is { Success: false })
         {
@@ -23,5 +28,15 @@ public class InscripcionProxy : CrudRestHelperBase<InscripcionDtoRequest, Inscri
         }
 
         return response!;
+    }
+
+    public async Task InscripcionMasivaAsync(InscripcionMasivaDtoRequest request)
+    {
+        var response = await HttpClient.PostAsJsonAsync($"{BaseUrl}/masiva", request);
+        var result = await response.Content.ReadFromJsonAsync<BaseResponse>();
+        if (result is { Success: false })
+        {
+            throw new InvalidOperationException(result.ErrorMessage);
+        }
     }
 }

@@ -163,4 +163,43 @@ public class InscripcionService : IInscripcionService
 
         return response;
     }
+
+    public async Task<BaseResponse> AddMasivaAsync(InscripcionMasivaDtoRequest request)
+    {
+        var response = new BaseResponse();
+
+        try
+        {
+            // Codigo
+            var inscripciones = new List<Inscripcion>();
+            foreach (var id in request.Inscritos)
+            {
+                var alumno = await _alumnoRepository.FindByIdAsync(id);
+                if (alumno is null)
+                {
+                    response.ErrorMessage = "El alumno no existe";
+                    return response;
+                }
+                var inscripcion = new Inscripcion
+                {
+                    AlumnoId = alumno.Id,
+                    TallerId = request.TallerId,
+                    Situacion = SituacionInscripcion.Asistira
+                };
+
+                inscripciones.Add(inscripcion);
+            }
+
+            await _repository.AddMasivaAsync(inscripciones);
+
+            response.Success = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = "Error al agregar las inscripciones";
+            _logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+        }
+
+        return response;
+    }
 }

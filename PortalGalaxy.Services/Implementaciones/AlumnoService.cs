@@ -43,6 +43,34 @@ public class AlumnoService : IAlumnoService
         return response;
     }
 
+    public async Task<BaseResponseGeneric<ICollection<AlumnoSimpleDtoResponse>>> ListSimpleAsync(string? filtro, string? nroDocumento)
+    {
+        var response = new BaseResponseGeneric<ICollection<AlumnoSimpleDtoResponse>>();
+
+        try
+        {
+            response.Data = await _repository
+                .ListAsync(predicado: x => x.NombreCompleto.Contains(filtro ?? string.Empty)
+                && x.NroDocumento.StartsWith(nroDocumento ?? string.Empty),
+                selector: x => new AlumnoSimpleDtoResponse
+                {
+                    Id = x.Id,
+                    NombreCompleto = x.NombreCompleto,
+                    NroDocumento = x.NroDocumento,
+                    FechaRegistro = x.FechaCreacion.ToString("dd/MM/yyyy")
+                });
+
+            response.Success = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = "Error al cargar los alumnos";
+            _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+        }
+
+        return response;
+    }
+
     public async Task<BaseResponseGeneric<AlumnoDtoResponse>> FindByIdAsync(int id)
     {
 

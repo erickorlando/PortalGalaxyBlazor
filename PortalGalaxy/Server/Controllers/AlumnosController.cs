@@ -22,6 +22,14 @@ public class AlumnosController : ControllerBase
 
         return Ok(response);
     }
+    
+    [HttpGet("Simple")]
+    public async Task<IActionResult> GetSimple(string? nombre, string? nroDocumento)
+    {
+        var response = await _service.ListSimpleAsync(nombre, nroDocumento);
+
+        return Ok(response);
+    }
 
     [HttpGet("Eliminados")]
     public async Task<IActionResult> Get()

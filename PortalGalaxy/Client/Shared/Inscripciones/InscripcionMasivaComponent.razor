@@ -1,0 +1,71 @@
+﻿<div class="row">
+    <div class="col-7">
+        <label for="nombre" class="form-label">Nombre</label>
+        <input type="text" id="nombre" class="form-control" @bind-value="Participante"/>
+    </div>
+    <div class="col-5">
+        <label for="nroDocumento" class="form-label">Nro Documento</label>
+        <input type="text" id="nroDocumento" class="form-control" @bind-value="NroDocumento"/>
+    </div>
+</div>
+<div class="row mt-4 align-items-end">
+    <div class="col-7">
+        <label for="talleres" class="form-label">Taller</label>
+        <InputSelect id="talleres" class="form-select" @bind-Value="TallerSeleccionado">
+            @if (Talleres is { Count: > 0 })
+            {
+                <option>Todos</option>
+                foreach (var item in Talleres)
+                {
+                    <option value="@item.Id">@item.Nombre</option>
+                }
+            }
+            else
+            {
+                <option value="">No hay talleres abiertos</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="col offset-3">
+        <button type="button" class="btn btn-outline-primary" @onclick="Buscar"><i class="bi bi-search me-1"></i>Buscar</button>
+    </div>
+</div>
+<div class="mt-4">
+    @if (Alumnos is null)
+    {
+        <p class="alert alert-warning">Sin datos para mostrar</p>
+    }
+    else
+    {
+        <table class="table table-bordered">
+            <thead>
+            <tr class="table-primary">
+                <th >#</th>
+                <th>Nro documento</th>
+                <th>Nombre</th>
+                <th>Fecha de registro</th>
+                <th>&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Alumnos)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.NroDocumento</td>
+                    <td>@item.NombreCompleto</td>
+                    <td>@item.FechaRegistro</td>
+                    <td>
+                        <InputCheckbox @bind-Value="item.Seleccionado"/>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</div>
+<div class="row">
+    <div class="col offset-10">
+        <button type="button" class="btn btn-primary" @onclick="Inscribir" data-bs-dismiss="modal"><i class="bi bi-plus-circle me-1"></i>Guardar</button>
+    </div>
+</div>

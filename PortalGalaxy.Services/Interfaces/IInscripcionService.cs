@@ -11,4 +11,5 @@ public interface IInscripcionService
     Task<BaseResponseGeneric<InscripcionDtoRequest>> FindByIdAsync(int id);
     Task<BaseResponse> UpdateAsync(string email, int id, InscripcionDtoRequest request);
     Task<BaseResponse> DeleteAsync(int id);
+    Task<BaseResponse> AddMasivaAsync(InscripcionMasivaDtoRequest request);
 }

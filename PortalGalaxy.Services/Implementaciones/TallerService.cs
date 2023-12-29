@@ -47,6 +47,31 @@ public class TallerService : ITallerService
         return response;
     }
 
+    public async Task<BaseResponseGeneric<ICollection<TallerSimpleDtoResponse>>> ListSimpleAsync()
+    {
+        var response = new BaseResponseGeneric<ICollection<TallerSimpleDtoResponse>>();
+
+        try
+        {
+            response.Data = await _repository.ListAsync(
+                predicado: x => x.Situacion == SituacionTaller.Aperturada || x.Situacion == SituacionTaller.Por_Aperturar,
+                selector: x => new TallerSimpleDtoResponse
+                {
+                    Id = x.Id,
+                    Nombre = x.Nombre
+                });
+
+            response.Success = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = "Error al cargar los talleres";
+            _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+        }
+
+        return response;
+    }
+
     public async Task<BaseResponse> AddAsync(TallerDtoRequest request)
     {
         var response = new BaseResponse();

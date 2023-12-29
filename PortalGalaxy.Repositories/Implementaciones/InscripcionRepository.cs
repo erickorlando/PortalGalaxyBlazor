@@ -32,7 +32,11 @@ public class InscripcionRepository : RepositoryBase<Inscripcion>, IInscripcionRe
             filas: filas);
 
         return tupla;
-        
-        
+    }
+
+    public async Task AddMasivaAsync(ICollection<Inscripcion> inscripciones)
+    {
+        await Context.Set<Inscripcion>().AddRangeAsync(inscripciones);
+        await Context.SaveChangesAsync();
     }
 }

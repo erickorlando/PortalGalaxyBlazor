@@ -25,7 +25,7 @@ public class CrudRestHelperBase<TRequest, TResponse> : RestBase, ICrudRestHelper
         throw new InvalidOperationException(response.ErrorMessage);
     }
 
-    public async Task<ICollection<TResponse>> ListAsync()
+    public virtual async Task<ICollection<TResponse>> ListAsync()
     {
         var response = await HttpClient.GetFromJsonAsync<PaginationResponse<TResponse>>($"{BaseUrl}");
         if (response!.Success)

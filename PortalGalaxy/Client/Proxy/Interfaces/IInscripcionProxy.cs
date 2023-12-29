@@ -6,4 +6,6 @@ namespace PortalGalaxy.Client.Proxy.Interfaces;
 public interface IInscripcionProxy : ICrudRestHelper<InscripcionDtoRequest, InscripcionDtoResponse>
 {
     Task<PaginationResponse<InscripcionDtoResponse>> ListAsync(BusquedaInscripcionRequest request);
+    
+    Task InscripcionMasivaAsync(InscripcionMasivaDtoRequest request);
 }

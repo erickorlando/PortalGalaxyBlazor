@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortalGalaxy.Services.Interfaces;
+using PortalGalaxy.Shared;
 using PortalGalaxy.Shared.Request;
 
 namespace PortalGalaxy.Server.Controllers;
@@ -37,6 +38,15 @@ public class InscripcionesController : ControllerBase
     public async Task<IActionResult> Post([FromBody] InscripcionDtoRequest request)
     {
         var response = await _service.AddAsync(User.Identity!.Name!, request);
+
+        return response.Success ? Ok(response) : BadRequest(response);
+    }
+    
+    [HttpPost("masiva")]
+    [Authorize(Roles = Constantes.RolAdministrador)]
+    public async Task<IActionResult> PostMasiva([FromBody] InscripcionMasivaDtoRequest request)
+    {
+        var response = await _service.AddMasivaAsync(request);
 
         return response.Success ? Ok(response) : BadRequest(response);
     }

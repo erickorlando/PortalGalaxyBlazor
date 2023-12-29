@@ -49,10 +49,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Shared\Inscripciones\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <UpToDateCheckInput Remove="Pages\Inscripciones\ListInscripciones.razor" />
   </ItemGroup>
 

@@ -31,6 +31,14 @@ public class TalleresController : ControllerBase
         return response.Success ? Ok(response) : BadRequest(response);
     }
     
+    [HttpGet("simple")]
+    public async Task<IActionResult> Get()
+    {
+        var response = await _service.ListSimpleAsync();
+
+        return response.Success ? Ok(response) : BadRequest(response);
+    }
+    
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {

@@ -38,4 +38,17 @@ public class TallerProxy : CrudRestHelperBase<TallerDtoRequest, TallerDtoRespons
 
         return response!;
     }
+
+    public async Task<BaseResponseGeneric<ICollection<TallerSimpleDtoResponse>>> ListarAsync()
+    {
+        var response = await HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<TallerSimpleDtoResponse>>>(
+            $"{BaseUrl}/simple");
+
+        if (response is { Success: false })
+        {
+            throw new InvalidOperationException(response.ErrorMessage);
+        }
+
+        return response!;
+    }
 }

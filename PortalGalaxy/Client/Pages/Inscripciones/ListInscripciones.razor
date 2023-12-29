@@ -4,6 +4,8 @@
 @inject IToastService ToastService
 @inject IJSRuntime JsRuntime
 @inject HttpClient HttpClient
+@inject IAlumnoProxy AlumnoProxy
+@inject ITallerProxy TallerProxy
 
 <h2 class="text-uppercase mb-5">Listado de Inscritos</h2>
 
@@ -47,7 +49,7 @@
         <button class="btn btn-outline-primary" @onclick="OnLimpiar"><i class="bi bi-eraser-fill me-1"></i>Limpiar</button>
     </div>
     <div class="col-auto">
-        <button class="btn btn-primary" @onclick="OnLimpiar"><i class="bi bi-plus-circle me-1"></i>Inscribir</button>
+        <button class="btn btn-primary" @onclick="CargarTalleres" data-bs-toggle="modal" data-bs-target="#alumnoModal"><i class="bi bi-plus-circle me-1"></i>Inscribir</button>
     </div>
 </div>
 
@@ -114,18 +116,17 @@
 </div>
 <DataPager @ref="Paginador" Result="PagedResult" OnPageChanged="PaginaCambiada" OnPageSizeChanged="FilasPorPagina"></DataPager>
 
-
 <LoadingComponent IsLoading="IsLoading"/>
 
-<div class="modal fade" id="instructorModal" tabindex="-1">
+<div class="modal fade" id="alumnoModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h3 class="modal-title fs-5">Buscar Instructor</h3>
+                <h3 class="modal-title fs-5">Inscribir</h3>
                 <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                @* <ModalInstructor Categorias="Categorias" SeleccionInstructor="InstructorSeleccionado" /> *@
+                <InscripcionMasivaComponent Alumnos="ListaAlumnos" Talleres="ListaTalleres" BuscarEvent="BuscarAlumnos" InscribirEvent="InscribirMasivo" />
             </div>
         </div>
     </div>
@@ -250,6 +251,40 @@
         catch (Exception ex)
         {
             ToastService.ShowError(ex.Message);
+        }
+    }
+
+    public ICollection<AlumnoSimpleDtoResponse> ListaAlumnos { get; set; } = new List<AlumnoSimpleDtoResponse>();
+    public ICollection<TallerSimpleDtoResponse> ListaTalleres { get; set; } = new List<TallerSimpleDtoResponse>();
+
+    private async Task BuscarAlumnos(Tuple<string, string> tupla)
+    {
+        ListaAlumnos  = await AlumnoProxy.ListarAsync(tupla.Item1, tupla.Item2);
+    }
+
+    private async Task CargarTalleres()
+    {
+        var response = await TallerProxy.ListarAsync();
+        ListaTalleres = response.Data;
+    }
+
+    private async Task InscribirMasivo(InscripcionMasivaDtoRequest request)
+    {
+        try
+        {
+            IsLoading = true;
+            
+            await InscripcionProxy.InscripcionMasivaAsync(request);
+            
+            ToastService.ShowSuccess("Inscripciones realizadas correctamente");
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 

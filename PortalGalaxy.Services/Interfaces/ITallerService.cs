@@ -7,6 +7,7 @@ public interface ITallerService
 {
     Task<PaginationResponse<TallerDtoResponse>> ListAsync(BusquedaTallerRequest request);
     Task<PaginationResponse<InscritosPorTallerDtoResponse>> ListAsync(BusquedaInscritosPorTallerRequest request);
+    Task<BaseResponseGeneric<ICollection<TallerSimpleDtoResponse>>> ListSimpleAsync();
     Task<BaseResponse> AddAsync(TallerDtoRequest request);
     Task<BaseResponseGeneric<TallerDtoRequest>> FindByIdAsync(int id);
     Task<BaseResponse> UpdateAsync(int id, TallerDtoRequest request);
