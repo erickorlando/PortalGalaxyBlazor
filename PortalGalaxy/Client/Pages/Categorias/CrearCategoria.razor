@@ -2,6 +2,7 @@
 @inject ICategoriaProxy CategoriaProxy
 @inject IToastService ToastService
 @inject NavigationManager NavigationManager
+@attribute [Authorize(Roles = Constantes.RolAdministrador)]
 
 <EditCategoriaComponent Request="Request" Titulo="Crear Categoria" OnGrabar="OnGrabar" />
 

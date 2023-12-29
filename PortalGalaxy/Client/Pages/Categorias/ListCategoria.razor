@@ -3,6 +3,7 @@
 @inject NavigationManager NavigationManager
 @inject SweetAlertService Swal
 @inject IToastService ToastService
+@attribute [Authorize(Roles = Constantes.RolAdministrador)]
 
 <h2 class="text-uppercase mb-5">Listado de Categorias</h2>
 <div class="row mt-3 justify-content-end">

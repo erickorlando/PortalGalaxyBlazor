@@ -6,6 +6,7 @@
 @inject IToastService ToastService
 @inject IJSRuntime JsRuntime
 @inject HttpClient HttpClient
+@attribute [Authorize(Roles = Constantes.RolAdministrador)]
 
 <h2 class="text-uppercase mb-5">Listado de Talleres</h2>
 

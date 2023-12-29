@@ -6,6 +6,7 @@
 @inject HttpClient HttpClient
 @inject IAlumnoProxy AlumnoProxy
 @inject ITallerProxy TallerProxy
+@attribute [Authorize(Roles = Constantes.RolAdministrador)]
 
 <h2 class="text-uppercase mb-5">Listado de Inscritos</h2>
 

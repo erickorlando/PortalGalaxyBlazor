@@ -4,6 +4,7 @@
 @inject IJsonProxy JsonProxy
 @inject IToastService ToastService
 @inject NavigationManager NavigationManager
+@attribute [Authorize(Roles = Constantes.RolAdministrador)]
 
 <EditTallerComponent Categorias="Categorias" Situaciones="Situaciones" Titulo="Crear Taller" OnGuardar="OnGrabar" />
 
