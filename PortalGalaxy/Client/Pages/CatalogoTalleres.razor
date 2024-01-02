@@ -1,33 +1,138 @@
 ﻿@page "/CatalogoTalleres"
+@attribute [Authorize(Roles = Constantes.RolAlumno)]
 
 @inject IHomeProxy HomeProxy
 @inject IToastService ToastService
+@inject IInstructorProxy InstructorProxy
 
-<h3>CatalogoTalleres</h3>
+<div class="row align-items-end">
+    <div class="col offset-10">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <NavLink href="#"><i class="bi bi-house-door-fill me-1"></i>Inicio</NavLink>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Talleres</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<h3 class="text-uppercase">Listado de Talleres</h3>
+
+<div class="row">
+    <div class="col">
+        <label for="nombre" class="form-label">Nombre</label>
+        <InputText @bind-Value="BusquedaRequest.Nombre" class="form-control" id="nombre"/>
+    </div>
+    <div class="col">
+        <label for="instructor" class="form-label">Instructor</label>
+        <InputSelect id="instructor" class="form-select" @bind-Value="BusquedaRequest.InstructorId">
+            <option>Todos</option>
+            @foreach (var item in Instructores)
+            {
+                <option value="@item.Id">@item.Nombres</option>
+            }
+        </InputSelect>
+    </div>
+</div>
+<div class="mt-4 row align-items-end">
+    <div class="col">
+        <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
+        <InputDate @bind-Value="BusquedaRequest.FechaInicio" class="form-control" id="fechaInicio"/>
+    </div>
+    <div class="col">
+        <label for="fechaFin" class="form-label">Fecha de fin</label>
+        <InputDate @bind-Value="BusquedaRequest.FechaFin" class="form-control" id="fechaFin"/>
+    </div>
+    <div class="col offset-3">
+        <button type="button" class="btn btn-success text-black border-black w-100" @onclick="Hoy">Hoy</button>
+    </div>
+    <div class="col">
+        <button type="button" class="btn btn-success text-black border-black w-100" @onclick="EstaSemana">Esta semana</button>
+    </div>
+    <div class="col">
+        <button type="button" class="btn btn-success text-black border-black w-100" @onclick="EsteMes">Este mes</button>
+    </div>
+    <div class="col">
+        <button type="button" class="btn btn-primary w-100" @onclick="OnSearch"><i class="bi bi-search me-1"></i>Buscar</button>
+    </div>
+</div>
+<div class="justify-content-center mt-4 mb-5 row row-cols-sm-1 row-cols-xl-4 gap-4 g-1">
+    @if (Talleres is { Count: > 0 })
+    {
+        @foreach (var item in Talleres)
+        {
+            <div class="col">
+                <div class="tarjeta">
+                    <div class="tarjeta-imagen">
+                        @if (item.PortadaUrl is null)
+                        {
+                            <img alt="@item.Nombre"
+                                 src="assets/images/sinimagen.jpeg" style="width: 19rem"/>
+                        }
+                        else
+                        {
+                            <img alt="@item.Nombre"
+                                 src="@item.PortadaUrl" style="width: 19rem"/>
+                        }
+                        <div class="tarjeta-content text-center mt-3">
+                            <h5>@item.Nombre</h5>
+                            <div class="row p-3 justify-content-center">
+                                <span class="bg-black w-auto informacion-taller">
+                                    <i class="bi bi-calendar me-1 bg-info"></i> <label class="text-white">Día @item.FechaInicio.ToString("dd/MM/yyyy")</label>
+                                </span>
+                                <span class="mt-3 bg-black w-auto informacion-taller">
+                                    <i class="bi bi-alarm-fill me-1 bg-success"></i> <label class="text-white">Hora @item.HoraInicio.ToString("HH:mm") hrs</label>
+                                </span>
+                            </div>
+                            <div class="mb-1">
+                                <label class="text-black small">Instructor: @item.Instructor</label>
+                            </div>
+                            <button type="button" class="btn btn-warning text-black border-black">Información</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-danger-emphasis">Aun no se han publicado Talleres</p>
+    }
+    
+</div>
+<div class="row justify-content-center">
+    <DataPager @ref="Paginador" Result="PagedResult" OnPageChanged="PaginaCambiada" OnPageSizeChanged="FilasPorPagina"/>
+</div>
+<LoadingComponent IsLoading="IsLoading"/>
 
 @code {
 
     public bool IsLoading { get; set; }
-    public DataPager Paginador { get; set; } = new DataPager();
+    public DataPager Paginador { get; set; } = default!;
+    public PagedResult<TallerHomeDtoResponse> PagedResult { get; set; } = default!;
     public BusquedaTallerHomeRequest BusquedaRequest { get; set; } = new BusquedaTallerHomeRequest();
-    public ICollection<TallerHomeDtoResponse>? Talleres { get; set; }
+    private ICollection<TallerHomeDtoResponse>? Talleres { get; set; }
+    private ICollection<InstructorDtoResponse> Instructores { get; set; } = new List<InstructorDtoResponse>();
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             IsLoading = true;
-            var response = await HomeProxy.ListarTalleresHomeAsync(BusquedaRequest);
-            Paginador.Result = new PaginationData
+
+            PagedResult = new PagedResult<TallerHomeDtoResponse>()
             {
-                TotalPages = response.TotalPages,
-                RowCount = response.Data?.Count ?? 0,
-                RowPerPage = 10
+                CurrentPage = BusquedaRequest.Pagina,
+                RowPerPage = BusquedaRequest.Filas
             };
-        
-            Talleres = response.Data;
+            
+            await OnSearch();
+
+            Instructores = await InstructorProxy.ListAsync();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             ToastService.ShowError(ex.Message);
         }
@@ -35,6 +140,65 @@
         {
             IsLoading = false;
         }
+    }
+
+    private async Task OnSearch()
+    {
+        try
+        {
+            IsLoading = true;
+            var response = await HomeProxy.ListarTalleresHomeAsync(BusquedaRequest);
+            Talleres = response.Data;
+
+            if (Talleres is not null)
+            {
+                PagedResult.Results = Talleres;
+                PagedResult.RowCount = Talleres.Count;
+                PagedResult.TotalPages = response.TotalPages;
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+    
+    private async Task PaginaCambiada()
+    {
+        IsLoading = true;
+        BusquedaRequest.Pagina = PagedResult.CurrentPage;
+        BusquedaRequest.Filas = PagedResult.RowPerPage;
+
+        await OnSearch();
+    }
+    
+    private async Task FilasPorPagina()
+    {
+        BusquedaRequest.Pagina = PagedResult.CurrentPage;
+        BusquedaRequest.Filas = PagedResult.RowPerPage;
+        await OnSearch();
+    }
+
+    private void Hoy()
+    {
+        BusquedaRequest.FechaInicio = DateTime.Today;
+        BusquedaRequest.FechaFin = DateTime.Today;
+    }
+
+    private void EstaSemana()
+    {
+        BusquedaRequest.FechaInicio = DateTime.Today.AddDays(-7);
+        BusquedaRequest.FechaFin = DateTime.Today;
+    }
+    
+    private void EsteMes()
+    {
+        BusquedaRequest.FechaInicio = DateTime.Today.AddMonths(-1);
+        BusquedaRequest.FechaFin = DateTime.Today;
     }
 
 }

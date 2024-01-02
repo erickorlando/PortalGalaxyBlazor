@@ -19,7 +19,7 @@ public class HomeProxy : RestBase, IHomeProxy
         request.FechaFin = request.FechaFin?.AddDays(1);
         var fechaFin = request.FechaFin?.ToString("yyyy-MM-dd");
         
-        var response = await HttpClient.GetFromJsonAsync<PaginationResponse<TallerHomeDtoResponse>>($"?Nombre={request.Nombre}&InstructorId={request.InstructorId}&FechaInicio={fechaInicio}&FechaFin={fechaFin}&Pagina={request.Pagina}&Filas={request.Filas}");
+        var response = await HttpClient.GetFromJsonAsync<PaginationResponse<TallerHomeDtoResponse>>($"{BaseUrl}?Nombre={request.Nombre}&InstructorId={request.InstructorId}&FechaInicio={fechaInicio}&FechaFin={fechaFin}&Pagina={request.Pagina}&Filas={request.Filas}");
         
         if (response is { Success: false })
             throw new ApplicationException(response.ErrorMessage);

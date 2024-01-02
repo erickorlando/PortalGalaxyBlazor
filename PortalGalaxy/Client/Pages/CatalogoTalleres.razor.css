@@ -1,0 +1,19 @@
+﻿.tarjeta {
+    width: 19rem;
+    height: 38rem;
+    margin: 1px;
+    border: 1px solid black;
+}
+
+.tarjeta .tarjeta-imagen {
+    border-color: white;
+}
+
+.tarjeta .tarjeta-content {
+    align-items: center;
+}
+
+.informacion-taller {
+    border-radius: 5px;
+    padding: 1px 20px 1px 15px;
+}

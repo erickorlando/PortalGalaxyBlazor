@@ -69,7 +69,8 @@ public class UserService : IUserService
             }
 
             var roles = await _userManager.GetRolesAsync(identity);
-
+            response.Roles = roles.ToList();
+            
             var fechaExpiracion = DateTime.Now.AddDays(1);
 
             // Vamos a crear los claims

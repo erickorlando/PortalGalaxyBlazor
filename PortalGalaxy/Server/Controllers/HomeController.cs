@@ -21,7 +21,7 @@ public class HomeController : ControllerBase
         if (request.Pagina <= 0)
             request.Pagina = 1;
         if (request.Filas <= 0)
-            request.Filas = 10;
+            request.Filas = 5;
         
         var response = await _tallerService.ListarTalleresHomeAsync(request);
         return Ok(response);
