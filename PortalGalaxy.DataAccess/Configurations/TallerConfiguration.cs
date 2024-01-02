@@ -20,6 +20,9 @@ public class TallerConfiguration : IEntityTypeConfiguration<Taller>
         builder.Property(p => p.HoraInicio)
             .HasColumnType("DATETIME");
 
+        builder.Property(p => p.Descripcion)
+            .HasMaxLength(700);
+
         builder.HasIndex(p => p.Nombre);
     }
 }

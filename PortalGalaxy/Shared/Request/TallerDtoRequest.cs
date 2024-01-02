@@ -3,7 +3,7 @@
 public class TallerDtoRequest
 {
     public string Nombre { get; set; } = default!;
-
+    public string? Descripcion { get; set; }
     public int CategoriaId { get; set; }
 
     public int InstructorId { get; set; }

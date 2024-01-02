@@ -4,7 +4,7 @@
 
 <EditForm Model="Request" OnValidSubmit="OnGrabar">
     <DataAnnotationsValidator/>
-    <div class="row gx-5 mb-3">
+    <div class="row gx-4 mb-3">
         <div class="col-7">
             <label for="nombre" class="form-label">Nombre</label>
             <InputText class="form-control" id="nombre" @bind-Value="Request.Nombre"></InputText>
@@ -62,7 +62,7 @@
 , application/pdf" OnChange="OnTemarioChanged"/>
             </div>
         </div>
-        <div class="row mt-3 align-items-end">
+        <div class="row mt-3">
             <div class="col-5">
                 <div class="card">
                     <div class="card-header bg-dark">
@@ -79,16 +79,24 @@
                             <img src="@origen" alt="@Request.Nombre" style="width: 330px"/>
                         }
                     </div>
-                    <div class="card-footer text-center">
-                        @if (!string.IsNullOrEmpty(Request.TemarioUrl))
-                        {
+                    @if (!string.IsNullOrEmpty(Request.TemarioUrl))
+                    {
+                        <div class="card-footer text-center">
+
                             <a href="@Request.TemarioUrl" target="_blank" class="btn btn-outline-primary"><i class="bi bi-eye me-1"></i>Ver Temario</a>
-                        }
-                    </div>
+
+                        </div>
+                    }
                 </div>
 
             </div>
-            <div class="col offset-4">
+            <div class="col-6">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <InputTextArea @bind-Value="Request.Descripcion" class="form-control h-75" id="descripcion"/>
+            </div>
+        </div>
+        <div class="row justify-content-end m-0">
+            <div class="col offset-9">
                 <NavLink class="btn btn-outline-primary" href="taller/list"><i class="bi bi-x-circle me-1"></i>Cancelar</NavLink>
             </div>
             <div class="col">
@@ -115,29 +123,19 @@
 
 @code {
 
-    [EditorRequired]
-    [Parameter]
-    public string Titulo { get; set; } = default!;
+    [EditorRequired] [Parameter] public string Titulo { get; set; } = default!;
 
-    [EditorRequired]
-    [Parameter]
-    public ICollection<CategoriaDtoResponse> Categorias { get; set; } = new List<CategoriaDtoResponse>();
+    [EditorRequired] [Parameter] public ICollection<CategoriaDtoResponse> Categorias { get; set; } = new List<CategoriaDtoResponse>();
 
-    [EditorRequired]
-    [Parameter]
-    public ICollection<SituacionModel> Situaciones { get; set; } = new List<SituacionModel>();
+    [EditorRequired] [Parameter] public ICollection<SituacionModel> Situaciones { get; set; } = new List<SituacionModel>();
 
-    [EditorRequired]
-    [Parameter]
-    public EventCallback<TallerDtoRequest> OnGuardar { get; set; }
+    [EditorRequired] [Parameter] public EventCallback<TallerDtoRequest> OnGuardar { get; set; }
 
-    [Parameter]
-    public TallerDtoRequest Request { get; set; } = new();
+    [Parameter] public TallerDtoRequest Request { get; set; } = new();
 
     private InstructorDtoResponse? Seleccionado { get; set; }
 
-    [Parameter]
-    public string NombreInstructor { get; set; } = string.Empty;
+    [Parameter] public string NombreInstructor { get; set; } = string.Empty;
 
     private long _maxFileSize = 150 * 1024 * 1024;
 

@@ -5,18 +5,6 @@
 @inject IToastService ToastService
 @inject IInstructorProxy InstructorProxy
 
-<div class="row align-items-end">
-    <div class="col offset-10">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                    <NavLink href="#"><i class="bi bi-house-door-fill me-1"></i>Inicio</NavLink>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">Talleres</li>
-            </ol>
-        </nav>
-    </div>
-</div>
 <h3 class="text-uppercase">Listado de Talleres</h3>
 
 <div class="row">
@@ -191,14 +179,14 @@
 
     private void EstaSemana()
     {
-        BusquedaRequest.FechaInicio = DateTime.Today.AddDays(-7);
-        BusquedaRequest.FechaFin = DateTime.Today;
+        BusquedaRequest.FechaInicio = DateTime.Today;
+        BusquedaRequest.FechaFin = DateTime.Today.AddDays(7);
     }
     
     private void EsteMes()
     {
-        BusquedaRequest.FechaInicio = DateTime.Today.AddMonths(-1);
-        BusquedaRequest.FechaFin = DateTime.Today;
+        BusquedaRequest.FechaInicio = DateTime.Today;
+        BusquedaRequest.FechaFin = DateTime.Today.AddMonths(1);
     }
 
 }

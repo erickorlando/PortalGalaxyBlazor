@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PortalGalaxy.DataAccess;
 
@@ -11,9 +12,11 @@ using PortalGalaxy.DataAccess;
 namespace PortalGalaxy.DataAccess.Migrations
 {
     [DbContext(typeof(PortalGalaxyDbContext))]
-    partial class PortalGalaxyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240102204714_ExtendDescripcionTaller")]
+    partial class ExtendDescripcionTaller
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
