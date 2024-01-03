@@ -148,6 +148,9 @@ using (var scope = app.Services.CreateScope())
 
     dbContext.Database.Migrate();
 
+    var securityDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    securityDbContext.Database.Migrate();
+
     await UserDataSeeder.Seed(scope.ServiceProvider);
 }
 
