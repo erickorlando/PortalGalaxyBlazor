@@ -11,6 +11,9 @@ public interface ITallerService
     Task<PaginationResponse<TallerHomeDtoResponse>> ListarTalleresHomeAsync(BusquedaTallerHomeRequest request);
     Task<BaseResponse> AddAsync(TallerDtoRequest request);
     Task<BaseResponseGeneric<TallerDtoRequest>> FindByIdAsync(int id);
+    
+    Task<BaseResponseGeneric<TallerHomeDtoResponse>> GetTallerHomeAsync(int id);
+    
     Task<BaseResponse> UpdateAsync(int id, TallerDtoRequest request);
     Task<BaseResponse> DeleteAsync(int id);
 }

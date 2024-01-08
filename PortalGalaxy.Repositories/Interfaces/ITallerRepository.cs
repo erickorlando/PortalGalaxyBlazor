@@ -12,4 +12,6 @@ public interface ITallerRepository : IRepositoryBase<Taller>
     
     Task<(ICollection<TallerHomeInfo> Collection, int Total)> ListarTalleresHomeAsync(string? nombre, int? instructorId,
         DateTime? fechaInicio, DateTime? fechaFin, int pagina, int filas);
+    
+    Task<TallerHomeInfo?> ObtenerTallerHomeAsync(int id);
 }

@@ -26,4 +26,14 @@ public class HomeProxy : RestBase, IHomeProxy
         
         return response!;
     }
+
+    public async Task<BaseResponseGeneric<TallerHomeDtoResponse>> GetTallerHomeAsync(int id)
+    {
+        var response = await HttpClient.GetFromJsonAsync<BaseResponseGeneric<TallerHomeDtoResponse>>($"{BaseUrl}/{id}");
+        
+        if (response is { Success: false })
+            throw new ApplicationException(response.ErrorMessage);
+        
+        return response!;
+    }
 }

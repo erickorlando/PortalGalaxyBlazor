@@ -26,4 +26,11 @@ public class HomeController : ControllerBase
         var response = await _tallerService.ListarTalleresHomeAsync(request);
         return Ok(response);
     }
+    
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> Get(int id)
+    {
+        var response = await _tallerService.GetTallerHomeAsync(id);
+        return Ok(response);
+    }
 }

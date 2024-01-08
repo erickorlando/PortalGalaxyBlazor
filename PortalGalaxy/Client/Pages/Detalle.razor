@@ -1,0 +1,110 @@
+﻿@page "/Detalle/{Id:int}"
+
+@inject SweetAlertService Swal
+@inject IInscripcionProxy InscripcionProxy
+@inject IHomeProxy HomeProxy
+@inject IToastService ToastService
+@inject NavigationManager NavigationManager
+
+@attribute [Authorize(Roles = Constantes.RolAlumno)]
+
+<h2>
+    <NavLink href="CatalogoTalleres" class="text-black me-2"><i class="bi bi-backspace me-1"></i></NavLink>@Taller?.Nombre
+</h2>
+@if (Taller is null)
+{
+    <p class="text-danger-emphasis">No hay datos para mostrar</p>
+}
+else
+{
+    <div class="container p-0">
+        <div class="row border border-black border-1 mt-5">
+            <div class="col">
+                @if (Taller.PortadaUrl is null)
+                {
+                    <img alt="@Taller.Nombre"
+                         src="assets/images/sinimagen.jpeg" style="width: 30rem"/>
+                }
+                else
+                {
+                    <img alt="@Taller.Nombre"
+                         src="@Taller.PortadaUrl" style="width: 30rem; margin: 0px;"/>
+                }
+            </div>
+            <div class="col">
+                <p class="mt-5 text-dark-emphasis">@Taller.Descripcion</p>
+                <p class="mt-3">
+                    <strong class="me-2">Instructor:</strong>@Taller.Instructor
+                </p>
+                <div class="d-block justify-content-between">
+                    <label class="bg-black w-auto informacion-taller">
+                        <i class="bi bi-calendar me-1 bg-info"></i> <label class="text-white">Día @Taller.FechaInicio.ToString("dd/MM/yyyy")</label>
+                    </label>
+                    <label class="mt-3 bg-black w-auto informacion-taller">
+                        <i class="bi bi-alarm-fill me-1 bg-success"></i> <label class="text-white">Hora @Taller.HoraInicio.ToString("HH:mm") hrs</label>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5 justify-content-between">
+            <div class="col">
+                <a target="_blank" href="@Taller.TemarioUrl" class="btn btn-warning fs-4"><i class="bi bi-arrow-down-square-fill me-1" style="background-color: orange"></i>Descargar temario</a>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-dark fs-4" @onclick="Inscribirse"><i class="bi bi-arrow-right-square me-1" style="background-color: green"></i>Inscribirme</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+    [Parameter] public int Id { get; set; }
+
+    private TallerHomeDtoResponse? Taller { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            var response = await HomeProxy.GetTallerHomeAsync(Id);
+            Taller = response.Data;
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task Inscribirse()
+    {
+        try
+        {
+            if (Taller is null) return;
+
+            var result = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Text = "Desea inscribirse al Taller?",
+                Title = "Inscribirme",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+            if (result.IsConfirmed is false) return;
+
+            await InscripcionProxy.CreateAsync(new InscripcionDtoRequest
+            {
+                TallerId = Id,
+                Situacion = 0
+            });
+
+            ToastService.ShowSuccess("Inscripción realizada con éxito");
+            NavigationManager.NavigateTo("/CatalogoTalleres");
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+    }
+
+}

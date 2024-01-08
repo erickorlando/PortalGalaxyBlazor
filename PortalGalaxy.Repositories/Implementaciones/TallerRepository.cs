@@ -92,4 +92,23 @@ public class TallerRepository : RepositoryBase<Taller>, ITallerRepository
         
         return tupla;
     }
+
+    public async Task<TallerHomeInfo?> ObtenerTallerHomeAsync(int id)
+    {
+        return await Context.Set<Taller>()
+            .Where(p => p.Id == id)
+            .Select(p => new TallerHomeInfo
+            {
+                Id = p.Id,
+                Nombre = p.Nombre,
+                FechaInicio = p.FechaInicio,
+                HoraInicio = p.HoraInicio,
+                PortadaUrl = p.PortadaUrl,
+                TemarioUrl = p.TemarioUrl,
+                Descripcion = p.Descripcion,
+                Instructor = p.Instructor.Nombres
+            })
+            .FirstOrDefaultAsync();
+    }
+
 }
