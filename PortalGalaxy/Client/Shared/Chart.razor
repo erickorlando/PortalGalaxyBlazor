@@ -1,0 +1,84 @@
+﻿@inject IJSRuntime JsRuntime
+
+<canvas id="@Id" style="display: block; box-sizing: border-box;width: @Width; height: @Height" height="@Height" width="@Height"></canvas>
+
+@code {
+
+    public enum ChartType
+    {
+        Pie,
+        Bar
+    }
+
+    [Parameter] public string Id { get; set; } = default!;
+
+    [Parameter] public ChartType Type { get; set; }
+
+    [Parameter] public string[] Data { get; set; } = default!;
+
+    [Parameter] public string[] BackgroundColor { get; set; } = default!;
+
+    [Parameter] public string[] Labels { get; set; } = default!;
+
+    [Parameter] public string Cabecera { get; set; } = string.Empty;
+
+    [Parameter] public string Width { get; set; } = "400px";
+
+    [Parameter] public string Height { get; set; } = "400px";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var config = new
+        {
+            Type = Type.ToString().ToLower(),
+            Options = new
+            {
+                Responsive = false,
+                MaintainAspectRatio = true,
+                AspectRatio = 1,
+                Scales = new
+                {
+                    Y = new
+                    {
+                        BeginAtZero = true
+                    }
+                },
+                Plugins = new
+                {
+                    DataLabels = new
+                    {
+                        Anchor = "end",
+                        Align = "top",
+                        Color = "yellow",
+                        Font = new
+                        {
+                            weight = "bolder",
+                            Size = 70
+                        }
+                    },
+                    Legend = new
+                    {
+                        Display = false
+                    }
+                }
+            },
+            Data = new
+            {
+                Datasets = new[]
+                {
+                    new
+                    {
+                        Data,
+                        BackgroundColor,
+                        Label = Cabecera,
+                        IndexxAxis = 'x'
+                    }
+                },
+                Labels
+            }
+        };
+
+        await JsRuntime.InvokeVoidAsync("setup", Id, config);
+    }
+
+}

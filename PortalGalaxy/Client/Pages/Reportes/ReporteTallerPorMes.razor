@@ -1,0 +1,74 @@
+﻿@page "/reportes/TallerPorMes"
+@inject ITallerProxy TallerProxy
+@inject IToastService ToastService
+@* @attribute [Authorize(Roles = Constantes.RolAdministrador)] *@
+
+<h3 class="text-primary">Talleres por Mes</h3>
+
+<div class="row justify-content-end">
+    <div class="col offset-10">
+        <select id="anio" class="form-select" @onchange="CambiarAnio">
+            @foreach (var item in ListAnios)
+            {
+                <option value="@item">@item</option>
+            }
+        </select>
+    </div>
+</div>
+<div class="row justify-content-between">
+    <Chart Id="barPorMes" Type="@Chart.ChartType.Bar"
+           Data="@Datos" BackgroundColor="@(new[] { "steelblue" })"
+           Labels="@Labels" Width="600px" Height="600px" Cabecera="Mes">
+    </Chart>
+</div>
+
+@code {
+
+    private List<int> ListAnios { get; set; } = default!;
+
+    private string[] Labels { get; set; } = default!;
+    private string[] Datos { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListAnios = new List<int>();
+        for (var i = DateTime.Now.Year; i >= DateTime.Now.AddYears(-3).Year; i--)
+        {
+            ListAnios.Add(i);
+        }
+
+        await CargaDatos(DateTime.Today.Year);
+    }
+
+    private async Task CargaDatos(int anio)
+    {
+        try
+        {
+            var response = await TallerProxy.ListarPorMesAsync(anio);
+            if (response.Success)
+            {
+                var data = response.Data;
+
+                Labels = data.Select(x => x.Mes).ToArray();
+                Datos = data.Select(x => x.Cantidad.ToString()).ToArray();
+            }
+            else
+            {
+                ToastService.ShowError(response.ErrorMessage!);
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+    }
+    
+    private async Task CambiarAnio(ChangeEventArgs? e)
+    {
+        if (e is { Value: not null })
+        {
+            await CargaDatos(int.Parse(e.Value.ToString() ?? DateTime.Now.Year.ToString()));    
+        }
+    }
+
+}

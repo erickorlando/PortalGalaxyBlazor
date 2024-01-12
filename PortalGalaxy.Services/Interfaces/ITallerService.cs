@@ -13,6 +13,10 @@ public interface ITallerService
     Task<BaseResponseGeneric<TallerDtoRequest>> FindByIdAsync(int id);
     
     Task<BaseResponseGeneric<TallerHomeDtoResponse>> GetTallerHomeAsync(int id);
+
+    Task<BaseResponseGeneric<ICollection<TalleresPorMesDto>>> ReporteTalleresPorMes(int anio);
+    
+    Task<BaseResponseGeneric<ICollection<TalleresPorInstructorDto>>> ReporteTalleresPorInstructor(int anio);
     
     Task<BaseResponse> UpdateAsync(int id, TallerDtoRequest request);
     Task<BaseResponse> DeleteAsync(int id);

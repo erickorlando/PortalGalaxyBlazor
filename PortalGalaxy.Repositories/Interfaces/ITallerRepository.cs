@@ -14,4 +14,8 @@ public interface ITallerRepository : IRepositoryBase<Taller>
         DateTime? fechaInicio, DateTime? fechaFin, int pagina, int filas);
     
     Task<TallerHomeInfo?> ObtenerTallerHomeAsync(int id);
+    
+    Task<ICollection<TalleresPorMesInfo>> ListarTalleresPorMesAsync(int anio);
+    
+    Task<ICollection<TalleresPorInstructorInfo>> ListarTalleresPorInstructorAsync(int anio);
 }

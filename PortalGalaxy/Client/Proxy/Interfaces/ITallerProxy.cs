@@ -10,4 +10,8 @@ public interface ITallerProxy : ICrudRestHelper<TallerDtoRequest, TallerDtoRespo
     Task<PaginationResponse<InscritosPorTallerDtoResponse>> ListAsync(BusquedaInscritosPorTallerRequest request);
 
     Task<BaseResponseGeneric<ICollection<TallerSimpleDtoResponse>>> ListarAsync();
+    
+    Task<BaseResponseGeneric<ICollection<TalleresPorMesDto>>> ListarPorMesAsync(int anio);
+    
+    Task<BaseResponseGeneric<ICollection<TalleresPorInstructorDto>>> ListarPorInstructorAsync(int anio);
 }

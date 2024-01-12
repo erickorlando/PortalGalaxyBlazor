@@ -161,6 +161,42 @@ public class TallerService : ITallerService
         return response;
     }
 
+    public async Task<BaseResponseGeneric<ICollection<TalleresPorMesDto>>> ReporteTalleresPorMes(int anio)
+    {
+        var response = new BaseResponseGeneric<ICollection<TalleresPorMesDto>>();
+        try
+        {
+            var entity = await _repository.ListarTalleresPorMesAsync(anio);
+
+            response.Data = _mapper.Map<ICollection<TalleresPorMesDto>>(entity);
+            response.Success = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = "Error al buscar un Taller";
+            _logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+        }
+        return response;
+    }
+
+    public async Task<BaseResponseGeneric<ICollection<TalleresPorInstructorDto>>> ReporteTalleresPorInstructor(int anio)
+    {
+        var response = new BaseResponseGeneric<ICollection<TalleresPorInstructorDto>>();
+        try
+        {
+            var entity = await _repository.ListarTalleresPorInstructorAsync(anio);
+
+            response.Data = _mapper.Map<ICollection<TalleresPorInstructorDto>>(entity);
+            response.Success = true;
+        }
+        catch (Exception ex)
+        {
+            response.ErrorMessage = "Error al buscar un Taller";
+            _logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+        }
+        return response;
+    }
+
     public async Task<BaseResponse> UpdateAsync(int id, TallerDtoRequest request)
     {
         var response = new BaseResponse();

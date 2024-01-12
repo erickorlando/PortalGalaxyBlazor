@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Globalization;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using PortalGalaxy.DataAccess;
@@ -111,4 +112,36 @@ public class TallerRepository : RepositoryBase<Taller>, ITallerRepository
             .FirstOrDefaultAsync();
     }
 
+    public async Task<ICollection<TalleresPorMesInfo>> ListarTalleresPorMesAsync(int anio)
+    {
+        var query = await Context.Set<Taller>()
+            .Where(p => p.FechaInicio.Year == anio)
+            .GroupBy(p => p.FechaInicio.Month)
+            .Select(p => new TalleresPorMesInfo
+            {
+                Mes = p.Key.ToString(),
+                Cantidad = p.Count()
+            })
+            .ToListAsync();
+
+        query.ForEach(x => x.Mes = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(int.Parse(x.Mes)));
+        
+        return query;
+    }
+
+    public async Task<ICollection<TalleresPorInstructorInfo>> ListarTalleresPorInstructorAsync(int anio)
+    {
+        var query = await Context.Set<Taller>()
+            .Include(p => p.Instructor)
+            .Where(p => p.FechaInicio.Year == anio)
+            .GroupBy(p => p.Instructor.Nombres)
+            .Select(p => new TalleresPorInstructorInfo
+            {
+                Instructor = p.Key,
+                Cantidad = p.Count()
+            })
+            .ToListAsync();
+
+        return query;
+    }
 }

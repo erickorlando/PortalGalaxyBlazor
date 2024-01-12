@@ -137,6 +137,20 @@ app.Use(async delegate(HttpContext context, Func<Task> next)
     await next();
 });
 
+// Map endpoint for reports
+var group = app.MapGroup("api/Reportes");
+group.MapGet("TalleresPorMes/{anio:int}", async (ITallerService reporteService, int anio) =>
+{
+    var response = await reporteService.ReporteTalleresPorMes(anio);
+    return response;
+});
+
+group.MapGet("TalleresPorInstructor/{anio:int}", async (ITallerService reporteService, int anio) =>
+{
+    var response = await reporteService.ReporteTalleresPorInstructor(anio);
+    return response;
+});
+
 
 app.MapRazorPages();
 app.MapControllers();

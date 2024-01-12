@@ -22,5 +22,9 @@ public class TallerProfile : Profile
         CreateMap<InscritosPorTallerInfo, InscritosPorTallerDtoResponse>();
         
         CreateMap<TallerHomeInfo, TallerHomeDtoResponse>();
+        
+        CreateMap<TalleresPorMesInfo, TalleresPorMesDto>();
+        
+        CreateMap<TalleresPorInstructorInfo, TalleresPorInstructorDto>();
     }
 }

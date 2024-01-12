@@ -51,4 +51,32 @@ public class TallerProxy : CrudRestHelperBase<TallerDtoRequest, TallerDtoRespons
 
         return response!;
     }
+
+    public async Task<BaseResponseGeneric<ICollection<TalleresPorMesDto>>> ListarPorMesAsync(int anio)
+    {
+        var response =
+            await HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<TalleresPorMesDto>>>(
+                $"api/reportes/TalleresPorMes/{anio}");
+
+        if (response is { Success: false })
+        {
+            throw new InvalidOperationException(response.ErrorMessage);
+        }
+        
+        return response!;
+    }
+
+    public async Task<BaseResponseGeneric<ICollection<TalleresPorInstructorDto>>> ListarPorInstructorAsync(int anio)
+    {
+        var response =
+            await HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<TalleresPorInstructorDto>>>(
+                $"api/reportes/TalleresPorInstructor/{anio}");
+
+        if (response is { Success: false })
+        {
+            throw new InvalidOperationException(response.ErrorMessage);
+        }
+        
+        return response!;
+    }
 }
