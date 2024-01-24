@@ -29,8 +29,17 @@
                             <li class="nav-item">
                                 <NavLink href="inscripciones/list" class="nav-link link-dark"><i class="bi bi-people me-1"></i>Inscripciones</NavLink>
                             </li>
-                            <li class="nav-item">
-                                <NavLink href="reportes" class="nav-link link-dark"><i class="bi bi-reception-4 me-1"></i>Reportes</NavLink>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle link-dark" href="#" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-reception-4 me-1"></i>Reportes</a>
+                                <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
+                                    <li>
+                                        <NavLink href="reportes/tallerpormes" class="nav-link link-dark"><i class="bi bi-bar-chart-steps me-1"></i>Talleres por mes</NavLink>
+                                    </li>
+                                    <li>
+                                        <NavLink href="reportes/tallerporinstructor" class="nav-link link-dark"><i class="bi bi-graph-up-arrow me-1"></i>Talleres por instructor</NavLink>
+                                    </li>
+                                </ul>
+                                
                             </li>
                         </Authorized>
                     </AuthorizeView>
