@@ -25,6 +25,7 @@ builder.Services.AddScoped<IInscripcionProxy, InscripcionProxy>();
 builder.Services.AddScoped<IAlumnoProxy, AlumnoProxy>();
 builder.Services.AddScoped<IHomeProxy, HomeProxy>();
 
+builder.Services.AddBlazorBootstrap();
 builder.Services.AddSweetAlert2();
 builder.Services.AddBlazoredToast();
 builder.Services.AddBlazoredSessionStorage();

@@ -16,28 +16,68 @@
     </div>
 </div>
 <div class="row justify-content-between">
-    <Chart Id="barPorMes" Type="@Chart.ChartType.Bar"
-           Data="@Datos" BackgroundColor="@(new[] { "steelblue" })"
-           Labels="@Labels" Width="600px" Height="600px" Cabecera="Mes">
-    </Chart>
+    <BarChart @ref="_barChart" Class="mb-4"/>
 </div>
 
 @code {
 
+    private BarChart _barChart;
+
+    private ChartData _chartData = default!;
+
+    private BarChartOptions _chartOptions = default!;
+
     private List<int> ListAnios { get; set; } = default!;
 
-    private string[] Labels { get; set; } = default!;
-    private string[] Datos { get; set; } = default!;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await DataInicialAsync();
 
-    protected override async Task OnInitializedAsync()
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override void OnInitialized()
     {
         ListAnios = new List<int>();
         for (var i = DateTime.Now.Year; i >= DateTime.Now.AddYears(-3).Year; i--)
         {
             ListAnios.Add(i);
         }
+    }
 
-        await CargaDatos(DateTime.Today.Year);
+    private async Task DataInicialAsync()
+    {
+        _chartData = new ChartData
+        {
+            Labels = new List<string> { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", 
+                "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre" },
+            Datasets = new List<IChartDataset>()
+            {
+                new BarChartDataset()
+                {
+                    Label = "Talleres",
+                    Data = Enumerable.Range(0, 12).Select(_ => Convert.ToDouble(0)).ToList(),
+                    BackgroundColor = new List<string> { "#2c3e50" },
+                    CategoryPercentage = 0.9,
+                    BarPercentage = 1,
+                }
+            }
+        };
+
+        _chartOptions = new BarChartOptions();
+
+        _chartOptions.Interaction.Mode = InteractionMode.Index;
+
+        _chartOptions.Responsive = true;
+
+        _chartOptions.Scales.X!.Title!.Text = "Mes";
+        _chartOptions.Scales.X.Title.Display = true;
+
+        _chartOptions.Scales.Y!.Title!.Text = "Cantidad";
+        _chartOptions.Scales.Y.Title.Display = true;
+
+        await _barChart.InitializeAsync(_chartData, _chartOptions);
     }
 
     private async Task CargaDatos(int anio)
@@ -49,8 +89,33 @@
             {
                 var data = response.Data;
 
-                Labels = data.Select(x => x.Mes).ToArray();
-                Datos = data.Select(x => x.Cantidad.ToString()).ToArray();
+                var labels = data.Select(x => x.Mes).ToList();
+                var datos = data.Select(x => Convert.ToDouble(x.Cantidad)).ToList();
+
+                _chartData.Labels?.Clear();
+                _chartData.Labels?.AddRange(labels);
+
+                if (_chartData.Datasets != null)
+                {
+                    var firstDataSet = (BarChartDataset) _chartData.Datasets.First();
+                    firstDataSet.Data = datos;
+                }
+
+                _chartOptions = new BarChartOptions();
+
+                _chartOptions.Interaction.Mode = InteractionMode.Index;
+
+                _chartOptions.Responsive = true;
+
+                _chartOptions.Scales.X!.Title!.Text = "Mes";
+                _chartOptions.Scales.X.Title.Display = true;
+
+                _chartOptions.Scales.Y!.Title!.Text = "Cantidad";
+                _chartOptions.Scales.Y.Title.Display = true;
+
+                await _barChart.UpdateAsync(_chartData, _chartOptions);
+
+                await DataInicialAsync();
             }
             else
             {
@@ -62,12 +127,12 @@
             ToastService.ShowError(ex.Message);
         }
     }
-    
+
     private async Task CambiarAnio(ChangeEventArgs? e)
     {
         if (e is { Value: not null })
         {
-            await CargaDatos(int.Parse(e.Value.ToString() ?? DateTime.Now.Year.ToString()));    
+            await CargaDatos(int.Parse(e.Value.ToString() ?? DateTime.Now.Year.ToString()));
         }
     }
 
