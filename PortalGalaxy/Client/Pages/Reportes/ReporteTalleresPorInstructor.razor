@@ -1,9 +1,9 @@
-﻿@page "/reportes/tallerpormes"
+﻿@page "/reportes/tallerporinstructor"
 @inject ITallerProxy TallerProxy
 @inject IToastService ToastService
 @attribute [Authorize(Roles = Constantes.RolAdministrador)]
 
-<h3 class="text-primary">Talleres por Mes</h3>
+<h3 class="text-primary">Talleres por instructor</h3>
 
 <div class="row justify-content-end">
     <div class="col offset-10">
@@ -50,13 +50,12 @@
     {
         _chartData = new ChartData
         {
-            Labels = new List<string> { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", 
-                "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre" },
+            Labels = new List<string> { "Instructor 1", "Instructor 2" },
             Datasets = new List<IChartDataset>()
             {
                 new BarChartDataset()
                 {
-                    Label = "Talleres",
+                    Label = "Instructores",
                     Data = Enumerable.Range(0, 12).Select(_ => Convert.ToDouble(0)).ToList(),
                     BackgroundColor = new List<string> { "#2c3e50" },
                     CategoryPercentage = 0.9,
@@ -68,14 +67,8 @@
         _chartOptions = new BarChartOptions();
 
         _chartOptions.Interaction.Mode = InteractionMode.Index;
-
+        _chartOptions.IndexAxis = "y";
         _chartOptions.Responsive = true;
-
-        _chartOptions.Scales.X!.Title!.Text = "Mes";
-        _chartOptions.Scales.X.Title.Display = true;
-
-        _chartOptions.Scales.Y!.Title!.Text = "Cantidad";
-        _chartOptions.Scales.Y.Title.Display = true;
 
         await _barChart.InitializeAsync(_chartData, _chartOptions);
     }
@@ -84,12 +77,12 @@
     {
         try
         {
-            var response = await TallerProxy.ListarPorMesAsync(anio);
+            var response = await TallerProxy.ListarPorInstructorAsync(anio);
             if (response.Success)
             {
                 var data = response.Data;
 
-                var labels = data.Select(x => x.Mes).ToList();
+                var labels = data.Select(x => x.Instructor).ToList();
                 var datos = data.Select(x => Convert.ToDouble(x.Cantidad)).ToList();
 
                 _chartData.Labels?.Clear();
@@ -100,18 +93,6 @@
                     var firstDataSet = (BarChartDataset) _chartData.Datasets.First();
                     firstDataSet.Data = datos;
                 }
-
-                _chartOptions = new BarChartOptions();
-
-                _chartOptions.Interaction.Mode = InteractionMode.Index;
-
-                _chartOptions.Responsive = true;
-
-                _chartOptions.Scales.X!.Title!.Text = "Mes";
-                _chartOptions.Scales.X.Title.Display = true;
-
-                _chartOptions.Scales.Y!.Title!.Text = "Cantidad";
-                _chartOptions.Scales.Y.Title.Display = true;
 
                 await _barChart.UpdateAsync(_chartData, _chartOptions);
 
